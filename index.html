@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ṢOMI — Property Services Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F2B3D;--teal:#1A5C6B;--tealL:#2A7F92;
+  --gold:#C8924A;--goldL:#E8B070;--green:#2D7D59;
+  --orange:#C8621A;--red:#C0392B;--mid:#4A6070;--light:#8A9BAA;
+  --bg:#F5F2EC;
+}
+html{font-family:'DM Sans',-apple-system,sans-serif;background:linear-gradient(135deg,#F5F2EC 0%,#EDE9E0 50%,#F0EEE8 100%);min-height:100vh;color:var(--navy)}
+body{min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
+
+.glass{background:rgba(255,255,255,.68);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.88);border-radius:20px;box-shadow:0 8px 40px rgba(15,43,61,.08)}
+.card{background:rgba(255,255,255,.84);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.95);border-radius:20px;box-shadow:0 8px 32px rgba(15,43,61,.09)}
+
+/* Layout */
+#app{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
+.page-content{padding:20px 16px 100px}
+.sticky-header{position:sticky;top:0;z-index:100;background:rgba(245,242,236,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.6)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:11px 18px}
+.wordmark{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;color:var(--navy);letter-spacing:-.5px}
+.logo-mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:900;font-size:16px;color:#fff}
+.header-left{display:flex;align-items:center;gap:8px}
+.role-chip{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.back-btn{background:none;border:none;font-size:18px;cursor:pointer;color:var(--mid);padding:4px 8px}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(245,242,236,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,.8);padding:8px 0 20px;z-index:100}
+.nav-items{display:flex}
+.nav-btn{flex:1;border:none;background:none;cursor:pointer;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.nav-btn svg{display:block}
+.nav-label{font-size:9px;font-weight:500;color:var(--light);letter-spacing:.3px}
+.nav-btn.active .nav-label{font-weight:700}
+.nav-underline{width:18px;height:2px;border-radius:1px;margin-top:1px}
+.nav-badge{position:absolute;top:2px;right:calc(50% - 16px);width:15px;height:15px;border-radius:50%;background:var(--orange);color:#fff;font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #F5F2EC}
+
+/* Buttons */
+.btn{border:none;border-radius:12px;padding:11px 20px;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+.btn:hover{opacity:.9}
+.btn:active{opacity:.8}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--tealL));color:#fff}
+.btn-navy{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--goldL));color:#fff}
+.btn-green{background:linear-gradient(135deg,var(--green),#3AAA75);color:#fff}
+.btn-ghost{background:none;border:1.5px solid rgba(15,43,61,.15);color:var(--mid)}
+.btn-red{background:linear-gradient(135deg,var(--red),#D94F3F);color:#fff}
+.btn-block{width:100%;display:flex}
+.btn-lg{padding:15px 0;font-size:16px;border-radius:16px;box-shadow:0 8px 24px rgba(15,43,61,.25)}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:rgba(15,43,61,.07);color:var(--mid)}
+.tag-hot{background:#FDECEA;color:var(--red)}
+.tag-urgent{background:#FEF3E5;color:var(--orange)}
+.tag-open{background:#EAF5F0;color:var(--green)}
+.tag-gold{background:#FDF3E0;color:var(--gold)}
+.tag-teal{background:#E8F4F8;color:var(--teal)}
+.tag-green{background:#EAF5F0;color:var(--green)}
+.tag-pm{background:#EEF2F8;color:#3A5C8B}
+
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{padding:14px 12px;display:flex;flex-direction:column;gap:0}
+.stat-val{font-size:20px;font-weight:800;color:var(--navy);margin-top:8px}
+.stat-lbl{font-size:10px;color:var(--mid)}
+
+/* Tab bar */
+.tab-bar{display:flex;gap:4px;margin-bottom:18px;background:rgba(15,43,61,.06);border-radius:14px;padding:4px}
+.tab-btn{flex:1;border:none;border-radius:10px;padding:9px 0;font-weight:600;font-size:11px;cursor:pointer;background:transparent;color:var(--light);font-family:'DM Sans',sans-serif;transition:all .2s}
+.tab-btn.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
+/* Icon badge */
+.icon-badge{display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:10px}
+
+/* Avatar */
+.avatar{border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+
+/* Cards clickable */
+.card-btn{width:100%;border:none;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;display:block;padding:0;background:none}
+.card-btn:active{opacity:.9}
+
+/* Urgency bar */
+.urgency-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),#E8705A,var(--gold))}
+
+/* Forms */
+.form-label{font-size:12px;font-weight:600;color:var(--mid);margin-bottom:4px;display:block}
+.form-input{width:100%;border:1.5px solid rgba(15,43,61,.15);border-radius:12px;padding:11px 14px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;background:#fff}
+.form-input:focus{border-color:var(--teal)}
+.form-select{width:100%;border:1.5px solid rgba(15,43,61,.15);border-radius:12px;padding:11px 14px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;background:#fff;appearance:none}
+.form-textarea{width:100%;border:1.5px solid rgba(15,43,61,.15);border-radius:12px;padding:11px 14px;font-size:13px;outline:none;resize:none;font-family:'DM Sans',sans-serif;background:transparent}
+
+/* Modal overlay */
+.overlay{position:fixed;inset:0;background:rgba(15,43,61,.5);backdrop-filter:blur(8px);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{max-width:420px;width:100%;padding:26px}
+
+/* Bottom sheet */
+.sheet-overlay{position:fixed;inset:0;background:rgba(15,43,61,.5);backdrop-filter:blur(10px);z-index:999;display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:480px;border-radius:24px 24px 0 0;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.sheet-pull{display:flex;justify-content:center;padding:12px 0 4px;flex-shrink:0}
+.sheet-pull-bar{width:36px;height:4px;border-radius:2px;background:rgba(15,43,61,.15)}
+.sheet-body{overflow-y:auto;flex:1;padding:0 22px}
+.sheet-footer{padding:14px 22px 32px;flex-shrink:0;border-top:1px solid rgba(15,43,61,.06);background:rgba(255,255,255,.95);backdrop-filter:blur(20px)}
+.sheet-footer-note{text-align:center;font-size:11px;color:var(--light);margin-top:8px}
+
+/* Messages */
+.msg-bubble-me{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;border-radius:18px 18px 4px 18px}
+.msg-bubble-them{background:rgba(255,255,255,.92);color:var(--navy);border-radius:18px 18px 18px 4px;border:1px solid rgba(255,255,255,.9)}
+.msg-time{font-size:10px;color:var(--light);margin-top:3px}
+
+/* Offer card */
+.offer-card{background:#fff;border-radius:16px;padding:14px 16px;max-width:280px;box-shadow:0 4px 16px rgba(15,43,61,.10)}
+
+/* Checklist */
+.check-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(15,43,61,.2);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.check-box.done{background:var(--green);border-color:var(--green)}
+
+/* Progress bar */
+.progress-track{background:rgba(15,43,61,.08);border-radius:10px;height:8px;overflow:hidden}
+.progress-fill{height:100%;border-radius:10px;transition:width .3s}
+
+/* Timeline */
+.timeline-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.timeline-line{width:2px;height:20px;margin:2px auto 0}
+
+/* Live dot */
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+
+/* Star */
+.stars{color:var(--gold);font-size:13px;font-weight:700}
+.stars-empty{color:var(--light)}
+
+/* Misc utils */
+.flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-end{justify-content:flex-end}.gap4{gap:4px}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}.gap14{gap:14px}.gap16{gap:16px}.flex1{flex:1}.min-w-0{min-width:0}.relative{position:relative}.overflow-hidden{overflow:hidden}.text-right{text-align:right}
+.mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}.mb18{margin-bottom:18px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}
+.mt2{margin-top:2px}.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt10{margin-top:10px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.p14{padding:14px}.p16{padding:16px}.p18{padding:18px}.p20{padding:20px}.p22{padding:22px}.p24{padding:24px}.p28{padding:28px}
+.text-navy{color:var(--navy)}.text-mid{color:var(--mid)}.text-light{color:var(--light)}.text-teal{color:var(--teal)}.text-gold{color:var(--gold)}.text-green{color:var(--green)}.text-orange{color:var(--orange)}.text-red{color:var(--red)}
+.fw600{font-weight:600}.fw700{font-weight:700}.fw800{font-weight:800}.fw900{font-weight:900}
+.fs10{font-size:10px}.fs11{font-size:11px}.fs12{font-size:12px}.fs13{font-size:13px}.fs14{font-size:14px}.fs15{font-size:15px}.fs16{font-size:16px}.fs18{font-size:18px}.fs20{font-size:20px}.fs22{font-size:22px}.fs26{font-size:26px}.fs28{font-size:28px}.fs36{font-size:36px}.fs38{font-size:38px}
+.lh16{line-height:1.6}.ls08{letter-spacing:.8px}.ls05{letter-spacing:.5px}
+.divider{border:none;border-top:1px solid rgba(15,43,61,.06);margin:0}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nowrap{white-space:nowrap}
+.wrap{flex-wrap:wrap}
+.italic{font-style:italic}
+.serif{font-family:'Cormorant Garamond',serif}
+.center{text-align:center}
+.border-left-green{border-left:4px solid var(--green)}
+.border-left-teal{border-left:4px solid #3A5C8B}
+.r14{border-radius:14px}.r16{border-radius:16px}.r18{border-radius:18px}.r20{border-radius:20px}
+.w100{width:100%}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="sticky-header">
+    <div class="header-inner" id="header-inner"></div>
+  </div>
+  <div id="main"></div>
+  <div id="bottom-nav-wrap"></div>
+  <div id="modal-layer"></div>
+</div>
+
+<script>
+// ── ICONS ─────────────────────────────────────────────────────────
+function icon(name, size=20, color='#0F2B3D', sw=1.5) {
+  const a = `fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"`;
+  const s = `width="${size}" height="${size}" viewBox="0 0 24 24" style="display:block;flex-shrink:0"`;
+  const p = {
+    home:`<path ${a} d="M3 12L12 3l9 9"/><path ${a} d="M5 10v9a1 1 0 001 1h4v-4h4v4h4a1 1 0 001-1v-9"/>`,
+    key:`<circle ${a} cx="7.5" cy="15.5" r="4.5"/><path ${a} d="M21 2l-9.5 9.5M15.5 7.5l2 2M18 5l2 2"/>`,
+    broom:`<path ${a} d="M9 3l8 8-4 4-8-8zM13 11l-9 9M17 7l2-2"/><path ${a} d="M5 19c0 0 1-2 3-2s3 1 3 1"/>`,
+    wrench:`<path ${a} d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3-3a6 6 0 01-7.6 7.6L6.7 20.7A2.12 2.12 0 014 18l6.8-6.8a6 6 0 017.6-7.6l-3 3z"/>`,
+    building:`<rect ${a} x="3" y="3" width="18" height="18" rx="1"/><path ${a} d="M9 3v18M3 9h6M3 15h6M15 7h3M15 11h3M15 15h3"/>`,
+    star:`<polygon ${a} points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+    shield:`<path ${a} d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path ${a} d="M9 12l2 2 4-4"/>`,
+    lock:`<rect ${a} x="5" y="11" width="14" height="11" rx="2"/><path ${a} d="M8 11V7a4 4 0 018 0v4"/><circle fill="${color}" cx="12" cy="16" r="1"/>`,
+    msg:`<path ${a} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>`,
+    check:`<polyline ${a} points="20 6 9 17 4 12"/>`,
+    search:`<circle ${a} cx="11" cy="11" r="8"/><line ${a} x1="21" y1="21" x2="16.65" y2="16.65"/>`,
+    bell:`<path ${a} d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>`,
+    pin:`<path ${a} d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle ${a} cx="12" cy="10" r="3"/>`,
+    clock:`<circle ${a} cx="12" cy="12" r="10"/><polyline ${a} points="12 6 12 12 16 14"/>`,
+    person:`<path ${a} d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle ${a} cx="12" cy="7" r="4"/>`,
+    card:`<rect ${a} x="1" y="4" width="22" height="16" rx="2"/><line ${a} x1="1" y1="10" x2="23" y2="10"/>`,
+    dollar:`<line ${a} x1="12" y1="1" x2="12" y2="23"/><path ${a} d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>`,
+    cal:`<rect ${a} x="3" y="4" width="18" height="18" rx="2"/><line ${a} x1="16" y1="2" x2="16" y2="6"/><line ${a} x1="8" y1="2" x2="8" y2="6"/><line ${a} x1="3" y1="10" x2="21" y2="10"/>`,
+    photo:`<path ${a} d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle ${a} cx="12" cy="13" r="4"/>`,
+    list:`<line ${a} x1="8" y1="6" x2="21" y2="6"/><line ${a} x1="8" y1="12" x2="21" y2="12"/><line ${a} x1="8" y1="18" x2="21" y2="18"/><line ${a} x1="3" y1="6" x2="3.01" y2="6"/><line ${a} x1="3" y1="12" x2="3.01" y2="12"/><line ${a} x1="3" y1="18" x2="3.01" y2="18"/>`,
+    tool:`<path ${a} d="M3 3l18 18M10.5 10.5A4 4 0 005 15l2.5 2.5A4 4 0 0013.5 13M13.5 10.5A4 4 0 0019 6l-2.5-2.5A4 4 0 0010.5 7.5"/>`,
+    bolt:`<polygon ${a} points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>`,
+    flame:`<path ${a} d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/>`,
+    repeat:`<polyline ${a} points="17 1 21 5 17 9"/><path ${a} d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path ${a} d="M21 13v2a4 4 0 01-4 4H3"/>`,
+    eye:`<path ${a} d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle ${a} cx="12" cy="12" r="3"/>`,
+    offer:`<path ${a} d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line ${a} x1="7" y1="7" x2="7.01" y2="7"/>`,
+    trash:`<polyline ${a} points="3 6 5 6 21 6"/><path ${a} d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6"/><path ${a} d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>`,
+    edit:`<path ${a} d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path ${a} d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>`,
+    layer:`<polygon ${a} points="12 2 2 7 12 12 22 7 12 2"/><polyline ${a} points="2 17 12 22 22 17"/><polyline ${a} points="2 12 12 17 22 12"/>`,
+    grid:`<rect ${a} x="3" y="3" width="7" height="7"/><rect ${a} x="14" y="3" width="7" height="7"/><rect ${a} x="14" y="14" width="7" height="7"/><rect ${a} x="3" y="14" width="7" height="7"/>`,
+    award:`<circle ${a} cx="12" cy="8" r="6"/><path ${a} d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>`,
+    taxes:`<path ${a} d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline ${a} points="14 2 14 8 20 8"/><line ${a} x1="9" y1="15" x2="15" y2="15"/><line ${a} x1="9" y1="11" x2="15" y2="11"/>`,
+    chevron:`<polyline ${a} points="9 18 15 12 9 6"/>`,
+    trend:`<polyline ${a} points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline ${a} points="17 6 23 6 23 12"/>`,
+    x:`<line ${a} x1="18" y1="6" x2="6" y2="18"/><line ${a} x1="6" y1="6" x2="18" y2="18"/>`,
+    handshake:`<path ${a} d="M14 11l4-4-6-4-5 4H3v7l3 2 2-2h4l5 3 4-4-5-5-2 2"/><path ${a} d="M8 11l2 2"/>`,
+  };
+  return `<svg ${s} xmlns="http://www.w3.org/2000/svg">${p[name]||`<circle ${a} cx="12" cy="12" r="10"/>`}</svg>`;
+}
+
+function iconBadge(name, size=36, iconSize=16, bg='rgba(26,92,107,0.1)', color='#1A5C6B') {
+  const r = Math.round(size*0.3);
+  return `<div class="icon-badge" style="width:${size}px;height:${size}px;border-radius:${r}px;background:${bg};flex-shrink:0">${icon(name,iconSize,color)}</div>`;
+}
+
+function avatar(initials, size=40, color='#1A5C6B') {
+  return `<div class="avatar" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,${color},${color}88);font-size:${Math.round(size*.33)}px;box-shadow:0 2px 8px rgba(0,0,0,0.12)">${initials}</div>`;
+}
+
+function stars(rating) {
+  const full = Math.floor(rating), empty = 5 - full;
+  return `<span class="stars">${'★'.repeat(full)}<span class="stars-empty">${'☆'.repeat(empty)}</span> ${rating}</span>`;
+}
+
+function urgencyTag(level) {
+  const m = {hot:['tag-hot','flame','HOT'],high:['tag-urgent','bolt','URGENT'],normal:['tag-open','check','Open']};
+  const [cls,ic,lbl] = m[level]||m.normal;
+  return `<span class="tag ${cls}" style="font-size:10px;text-transform:uppercase;letter-spacing:.5px">${icon(ic,10,cls==='tag-hot'?'#C0392B':cls==='tag-urgent'?'#C8621A':'#2D7D59',2.5)} ${lbl}</span>`;
+}
+
+function statusTag(status) {
+  const m = {offers_in:{cls:'tag-gold',ic:'offer',lbl:'Offers In'},negotiating:{cls:'tag-teal',ic:'repeat',lbl:'Negotiating'},confirmed:{cls:'tag-green',ic:'check',lbl:'Confirmed'},live:{cls:'tag-urgent',ic:'eye',lbl:'Live'}};
+  const s = m[status]||m.live;
+  return `<span class="tag ${s.cls}" style="font-size:10px;text-transform:uppercase;letter-spacing:.4px">${icon(s.ic,10,'currentColor',2.5)} ${s.lbl}</span>`;
+}
+
+// ── STATE ─────────────────────────────────────────────────────────
+const S = {
+  screen:'landing', role:null, tab:'dashboard',
+  selectedRole:null,
+  // signup/onboarding
+  signup: false, signupStep:0, signupData:{},
+  bgCheckStatus: null, // null | 'processing' | 'cleared'
+  sheetCounterMode:false, sheetCounterAmt:'', sheetCounterNote:'',
+  // landlord
+  llTab:'browse', viewBid:null, viewProfile:null, postModal:false, editBid:false, cancelBid:false, postedBid:null, boosted:new Set(),
+  bidList:null,
+  // agent
+  agTab:'feed', agViewJob:null, agClaimed:[],
+  agBids:null,
+  // pro
+  proTab:'feed', proViewJob:null, proMyJobs:[], proActiveJob:null, proPhase:'detail', proChecked:{}, scopeOpen:false,
+  proJobs:null,
+  // messages
+  msgThread:null, msgList:null, msgOfferMode:false, msgOfferAmt:'', msgOfferNote:'', msgCounterTarget:null, msgInput:'',
+  threadList:null,
+};
+
+// ── DATA ──────────────────────────────────────────────────────────
+const AGENTS = [
+  {id:1,name:'Marcus Webb',ini:'MW',rate:45,rating:4.9,rc:87,city:'Cincinnati, OH',badge:'Top Pro',spec:'STR/MTR',color:'#1A5C6B',
+   exp:'6 years',closings:12,bio:'Specializes in short-term and mid-term rental showings across greater Cincinnati. Quick, reliable, and sends same-day showing reports.',
+   services:[['STR/MTR Showing','$45'],['LTR Showing','$35'],['Open House','$70'],['Tenant Vetting Report','+$15']],
+   testimonials:[{n:'AWA Properties',t:'Marcus filled our STR within 3 days. Very professional.',s:5},{n:'R. Jenkins',t:'Showed up on time and sent great photos.',s:5}]},
+  {id:2,name:'Dani Torres',ini:'DT',rate:65,rating:4.8,rc:54,city:'Columbus, OH',badge:'Verified',spec:'Luxury',color:'#C8924A',
+   exp:'4 years',closings:8,bio:'Luxury rental specialist in Columbus. Works with high-end properties and corporate relocation clients.',
+   services:[['Luxury STR Showing','$65'],['Corporate MTR Showing','$80'],['Virtual Tour','$90']],
+   testimonials:[{n:'B. Carter',t:'Dani knows how to present a luxury unit. Tenant signed same day.',s:5},{n:'P. Okafor',t:'Professional and well-dressed. Exactly what I needed.',s:4}]},
+  {id:3,name:'James Obi',ini:'JO',rate:30,rating:4.7,rc:120,city:'Cleveland, OH',badge:'Verified',spec:'All Types',color:'#5A3A6B',
+   exp:'9 years',closings:21,bio:'High-volume showing agent covering all rental types across NE Ohio. Best value on the platform with 9 years experience.',
+   services:[['STR Showing','$30'],['LTR Showing','$25'],['MTR Showing','$30'],['Multi-unit Tour','$50']],
+   testimonials:[{n:'C. Williams',t:'James is fast and efficient. Great for volume landlords.',s:5},{n:'A. Singh',t:'Third time using James. Never lets me down.',s:5}]},
+  {id:4,name:'Sofia Chen',ini:'SC',rate:80,rating:5.0,rc:32,city:'Cincinnati, OH',badge:'Elite',spec:'LTR/MTR',color:'#1A5C6B',
+   exp:'5 years',closings:6,bio:'Elite-tier agent with a 100% rating. Handles LTR and MTR showings with full tenant screening included.',
+   services:[['LTR Showing + Full Screening','$80'],['MTR Showing','$70'],['Lease Signing Assist','$50']],
+   testimonials:[{n:'AWA Properties',t:'Sofia is worth every penny. Tenant screened and signed in one visit.',s:5},{n:'D. Morris',t:'Perfect 5 stars every time.',s:5}]},
+];
+
+const PM_PROS = [
+  {id:101,name:'Keisha Lawson',ini:'KL',fee:'8%',feeAlt:'$150/mo',rating:4.9,rc:43,city:'Cincinnati, OH',badge:'Top PM',units:47,color:'#3A5C8B',
+   bio:'Full-service property manager with 8 years experience in Cincinnati. Handles tenant placement, rent collection, maintenance coordination, and monthly reporting.',
+   services:[['Full Management','8% of monthly rent'],['Tenant Placement Only',"1 month's rent"],['Rent Collection Only','$50/mo/unit'],['Monthly Reporting','$30/mo']],
+   testimonials:[{n:'AWA Properties',t:'Keisha manages 3 of my units. Zero stress.',s:5},{n:'T. Williams',t:'Best PM I\'ve worked with. Always responsive.',s:5}]},
+  {id:102,name:'David Park',ini:'DP',fee:'10%',feeAlt:'$200/mo',rating:4.7,rc:28,city:'Columbus, OH',badge:'Verified',units:31,color:'#3A5C8B',
+   bio:'Specializes in STR and MTR management for out-of-state landlords. Handles guest communication, turnover coordination, and dynamic pricing.',
+   services:[['STR Full Management','15% of revenue'],['MTR Management','10% of rent'],['Turnover Coordination','$75/turnover'],['Dynamic Pricing','$50/mo']],
+   testimonials:[{n:'R. Chen',t:'David handles everything for my Airbnb. Revenue up 20%.',s:5},{n:'M. Osei',t:'Great for remote landlords.',s:4}]},
+  {id:103,name:'Sandra Wright',ini:'SW',fee:'9%',feeAlt:'$175/mo',rating:4.8,rc:61,city:'Cincinnati, OH',badge:'Verified',units:58,color:'#3A5C8B',
+   bio:'LTR specialist managing single-family homes and small multifamily in Cincinnati. Known for low vacancy rates and strong tenant relationships.',
+   services:[['Full LTR Management','9% of rent'],['Tenant Placement',"1 month's rent"],['Lease Renewal','$200 flat'],['Maintenance Oversight','Included']],
+   testimonials:[{n:'J. Adams',t:'Sandra keeps my properties fully occupied.',s:5},{n:'AWA Properties',t:'Very thorough and communicative.',s:5}]},
+];
+
+function getBids() {
+  if (!S.bidList) S.bidList = [
+    {id:1,property:'1072 Rachel St, Cincinnati OH',type:'STR Showing',time:'Today 3:00 PM',bid:85,originalBid:85,boosts:2,urgency:'high',thumb:'home',
+     address:'1072 Rachel St, Cincinnati OH 45214',posted:'2h ago',beds:3,baths:2,notes:'Need agent to walk prospective tenant through unit and confirm lease terms. Key in lockbox.',
+     status:'offers_in',
+     interested:[
+       {ini:'MW',name:'Marcus Webb',badge:'Top Pro',rate:45,offer:70,offerNote:'Available 3pm. Includes showing report + tenant vetting.',offerStatus:'pending'},
+       {ini:'JO',name:'James Obi',badge:'Verified',rate:30,offer:null,offerNote:null,offerStatus:'viewing'},
+       {ini:'SC',name:'Sofia Chen',badge:'Elite',rate:80,offer:80,offerNote:'Available 3pm with full tenant screening included.',offerStatus:'pending'},
+     ]},
+    {id:2,property:'4422 Maple Ave, Columbus OH',type:'Cleaning Turnover',time:'Tomorrow 9:00 AM',bid:120,originalBid:120,boosts:0,urgency:'normal',thumb:'building',
+     address:'4422 Maple Ave, Columbus OH 43215',posted:'5h ago',beds:2,baths:1,notes:'Standard turnover clean between tenants. Leave fresh linens.',
+     status:'confirmed',
+     interested:[{ini:'JP',name:'Jordan Pierce',badge:'Verified',rate:120,offer:120,offerNote:"I can be there at 9am sharp.",offerStatus:'accepted'}]},
+    {id:3,property:'880 Vine St, Cincinnati OH',type:'LTR Showing',time:'Sat 11:00 AM',bid:65,originalBid:40,boosts:3,urgency:'hot',thumb:'home',
+     address:'880 Vine St, Cincinnati OH 45202',posted:'1d ago',beds:1,baths:1,notes:'Long-term rental showing. Prospective tenant is pre-qualified.',
+     status:'negotiating',
+     interested:[
+       {ini:'DT',name:'Dani Torres',badge:'Verified',rate:65,offer:65,offerNote:'Can do Saturday 11am.',offerStatus:'pending'},
+       {ini:'MW',name:'Marcus Webb',badge:'Top Pro',rate:45,offer:55,offerNote:"I'll do $55 for a quick LTR showing.",offerStatus:'pending'},
+     ]},
+    {id:4,property:'303 Clifton Ave, Cincinnati OH',type:'MTR Showing',time:'Today 6:00 PM',bid:150,originalBid:75,boosts:5,urgency:'hot',thumb:'key',
+     address:'303 Clifton Ave, Cincinnati OH 45220',posted:'3h ago',beds:4,baths:2,notes:'Mid-term rental, furnished unit. Tenant needs to move in this weekend.',
+     status:'offers_in',
+     interested:[
+       {ini:'SC',name:'Sofia Chen',badge:'Elite',rate:80,offer:130,offerNote:'I specialize in MTR — worth every dollar.',offerStatus:'pending'},
+       {ini:'JO',name:'James Obi',badge:'Verified',rate:30,offer:100,offerNote:'Available tonight at 6pm.',offerStatus:'pending'},
+     ]},
+  ];
+  return S.bidList;
+}
+
+function getAgBids() {
+  if (!S.agBids) S.agBids = [
+    {id:1,property:'1072 Rachel St, Cincinnati OH',type:'STR Showing',time:'Today 3:00 PM',bid:85,originalBid:85,boosts:2,urgency:'high',thumb:'home',
+     beds:3,baths:2,notes:'Need agent to walk prospective tenant through unit and confirm lease terms. Key in lockbox.',access:'Lockbox #4421'},
+    {id:2,property:'4422 Maple Ave, Columbus OH',type:'MTR Showing',time:'Tomorrow 2:00 PM',bid:65,originalBid:50,boosts:1,urgency:'normal',thumb:'building',
+     beds:2,baths:1,notes:'Mid-term showing, furnished. Tenant is relocating for work.',access:'Meet at property'},
+    {id:3,property:'880 Vine St, Cincinnati OH',type:'LTR Showing',time:'Sat 11:00 AM',bid:120,originalBid:40,boosts:5,urgency:'hot',thumb:'home',
+     beds:1,baths:1,notes:'Long-term rental, pre-qualified tenant ready to sign.',access:'Lockbox front door'},
+    {id:4,property:'303 Clifton Ave, Cincinnati OH',type:'STR Showing',time:'Today 6:00 PM',bid:150,originalBid:75,boosts:4,urgency:'hot',thumb:'key',
+     beds:4,baths:2,notes:'Furnished STR, new listing. Tenant very interested.',access:'Call landlord on arrival'},
+  ];
+  return S.agBids;
+}
+
+function getProJobs() {
+  if (!S.proJobs) S.proJobs = [
+    {id:1,icon:'broom',type:'STR Turnover',prop:'1072 Rachel St',beds:3,baths:2,sqft:1400,bid:120,time:'Today 11:00 AM',urgency:'hot',access:'Lockbox #4421',notes:'Guest checked out this morning. Fresh linens on all beds. Extra towels under sink.',recurring:true,supplies:['All-purpose cleaner','Microfiber cloths','Mop & bucket','Vacuum','Fresh linens (provided)']},
+    {id:2,icon:'wrench',type:'Fixture Repair',prop:'880 Vine St',beds:2,baths:1,sqft:900,bid:85,time:'Tomorrow 10:00 AM',urgency:'normal',access:'Meet landlord on site',notes:'Bathroom faucet dripping. Check under-sink pipe for slow leak.',recurring:false,supplies:['Adjustable wrench','Teflon tape','Replacement washers']},
+    {id:3,icon:'broom',type:'Deep Clean',prop:'303 Clifton Ave',beds:4,baths:3,sqft:2100,bid:200,time:'Sat 9:00 AM',urgency:'normal',access:'Key at front office',notes:'Tenant moved out. Full deep clean — oven, fridge, baseboards.',recurring:false,supplies:['Degreaser','Oven cleaner','Scrub brushes','Steam mop']},
+    {id:4,icon:'key',type:'Lock Change',prop:'4422 Maple Ave',beds:3,baths:2,sqft:1600,bid:65,time:'Fri 2:00 PM',urgency:'high',access:'Lockbox on side gate',notes:'Front & back door re-keyed before new tenant moves in Saturday.',recurring:false,supplies:['Rekey kit','Screwdrivers']},
+  ];
+  return S.proJobs;
+}
+
+const CHECKLIST = [
+  {id:'r1',room:'Kitchen',tasks:['Wipe countertops','Clean stovetop','Wipe appliances','Empty & reline trash','Mop floor']},
+  {id:'r2',room:'Living Room',tasks:['Vacuum carpet','Dust surfaces','Fluff pillows','Wipe baseboards']},
+  {id:'r3',room:'Bedroom 1',tasks:['Strip & remake bed (fresh linens)','Dust nightstands','Vacuum floor']},
+  {id:'r4',room:'Bedroom 2',tasks:['Strip & remake bed','Dust surfaces','Vacuum floor']},
+  {id:'r5',room:'Bathrooms',tasks:['Scrub toilet','Clean sink & mirror','Wipe shower/tub','Replace toiletries','Fresh towels']},
+];
+
+function getMsgList() {
+  if (!S.threadList) S.threadList = [
+    {id:1,name:'Marcus Webb',ini:'MW',role:'Agent',prop:'1072 Rachel St',last:"I can do it for $70 — available 3pm",time:'2m ago',unread:2,status:'negotiating'},
+    {id:2,name:'Dani Torres',ini:'DT',role:'Agent',prop:'880 Vine St',last:'Does the lockbox code still work?',time:'18m ago',unread:0,status:'confirmed'},
+    {id:3,name:'James Obi',ini:'JO',role:'Cleaner',prop:'303 Clifton Ave',last:"I'll need 3 hours for a deep clean",time:'1h ago',unread:1,status:'negotiating'},
+    {id:4,name:'Sofia Chen',ini:'SC',role:'Agent',prop:'4422 Maple Ave',last:'Tenant signed! Sending confirmation',time:'Yesterday',unread:0,status:'done'},
+  ];
+  return S.threadList;
+}
+
+const INIT_MSGS = {
+  1:[
+    {id:'m1',from:'them',type:'text',text:"Hi! Saw your showing bid for Rachel St — I'm local and available today.",time:'10:02 AM'},
+    {id:'m2',from:'me',type:'text',text:'Hi Marcus! Yes, need someone by 3pm today.',time:'10:04 AM'},
+    {id:'m3',from:'them',type:'text',text:"Your posted bid is $85. I can do $70 AND vet the tenant + full showing report.",time:'10:05 AM'},
+    {id:'m4',from:'me',type:'text',text:'What does vetting include?',time:'10:07 AM'},
+    {id:'m5',from:'them',type:'text',text:"Collect ID, verify employment verbally, send photos. 12 rentals closed on ṢOMI.",time:'10:08 AM'},
+    {id:'m6',from:'them',type:'offer',amount:70,originalBid:85,note:'Available 3pm. Includes showing report + tenant vetting.',time:'10:09 AM',status:'pending'},
+  ],
+  2:[
+    {id:'m1',from:'them',type:'text',text:'Confirmed for Saturday 11am at Vine St!',time:'Yesterday'},
+    {id:'m2',from:'me',type:'text',text:'Perfect. Lockbox code is 4421.',time:'Yesterday'},
+    {id:'m3',from:'them',type:'text',text:'Does the lockbox code still work?',time:'9:00 AM'},
+  ],
+  3:[
+    {id:'m1',from:'them',type:'text',text:'Saw your cleaning turnover at Clifton Ave.',time:'8:30 AM'},
+    {id:'m2',from:'me',type:'text',text:'Yes! 3br/2ba, standard condition.',time:'8:45 AM'},
+    {id:'m3',from:'them',type:'offer',amount:140,originalBid:120,note:'3 hours minimum. Need access by 9am.',time:'9:00 AM',status:'pending'},
+  ],
+  4:[
+    {id:'m1',from:'them',type:'text',text:'Finished the showing at Maple Ave. Tenant loved it!',time:'Yesterday'},
+    {id:'m2',from:'me',type:'text',text:'Amazing!! Did they seem serious?',time:'Yesterday'},
+    {id:'m3',from:'them',type:'text',text:'Tenant signed! Sending confirmation now.',time:'Yesterday'},
+  ],
+};
+
+if (!S.msgList) S.msgList = JSON.parse(JSON.stringify(INIT_MSGS));
+
+// ── RENDER ENGINE ─────────────────────────────────────────────────
+function render() {
+  renderHeader();
+  renderMain();
+  renderBottomNav();
+}
+
+function renderHeader() {
+  const el = document.getElementById('header-inner');
+  const logo = `<div class="header-left"><div class="logo-mark">Ṣ</div><span class="wordmark">ṢOMI</span></div>`;
+  if (S.screen === 'landing') { el.innerHTML = logo; return; }
+  const rc = roleConfig();
+  const chip = `<span class="role-chip" style="color:${rc.color};background:${rc.chipBg}">${rc.label}</span>`;
+  const back = `<button class="back-btn" onclick="go('landing')">←</button>`;
+  el.innerHTML = logo + `<div class="flex items-center gap10">${chip}${back}</div>`;
+}
+
+function roleConfig() {
+  const m = {
+    landlord:{color:'#1A5C6B',chipBg:'rgba(26,92,107,0.1)',label:'Landlord',navColor:'#1A5C6B'},
+    agent:{color:'#C8924A',chipBg:'rgba(200,146,74,0.12)',label:'Agent',navColor:'#C8924A'},
+    pro:{color:'#2D7D59',chipBg:'rgba(45,125,89,0.1)',label:'Service Pro',navColor:'#2D7D59'},
+  };
+  return m[S.role]||m.agent;
+}
+
+function renderMain() {
+  const el = document.getElementById('main');
+  if (S.screen === 'landing') { el.innerHTML = landingHTML(); return; }
+  if (S.screen === 'signup') { el.innerHTML = `<div class="page-content">${signupHTML()}</div>`; return; }
+  let html = '<div class="page-content">';
+  if (S.tab==='dashboard') {
+    if (S.role==='landlord') html += landlordHTML();
+    else if (S.role==='agent') html += agentHTML();
+    else if (S.role==='pro') html += proHTML();
+  } else if (S.tab==='services') html += servicesHTML();
+  else if (S.tab==='messages') html += messagesHTML();
+  else if (S.tab==='account') html += accountHTML();
+  html += '</div>';
+  el.innerHTML = html;
+  attachListeners();
+}
+
+function renderBottomNav() {
+  const el = document.getElementById('bottom-nav-wrap');
+  if (S.screen==='landing' || S.screen==='signup') { el.innerHTML=''; return; }
+  const rc = roleConfig();
+  const navs = {
+    landlord:[{id:'dashboard',ic:'home',lbl:'Dashboard'},{id:'services',ic:'grid',lbl:'Services'},{id:'messages',ic:'msg',lbl:'Messages',badge:3},{id:'account',ic:'person',lbl:'Account'}],
+    agent:[{id:'dashboard',ic:'bolt',lbl:'Jobs'},{id:'services',ic:'grid',lbl:'Services'},{id:'messages',ic:'msg',lbl:'Messages',badge:3},{id:'account',ic:'person',lbl:'Account'}],
+    pro:[{id:'dashboard',ic:'wrench',lbl:'Jobs'},{id:'messages',ic:'msg',lbl:'Messages',badge:1},{id:'account',ic:'person',lbl:'Account'}],
+  };
+  const nav = navs[S.role]||navs.agent;
+  const items = nav.map(n => {
+    const active = S.tab===n.id;
+    const ic = icon(n.ic, 22, active ? rc.navColor : '#8A9BAA', active?2:1.5);
+    const badge = (n.badge && !active) ? `<span class="nav-badge">${n.badge}</span>` : '';
+    const under = active ? `<div class="nav-underline" style="background:${rc.navColor}"></div>` : '';
+    const lbl = `<span class="nav-label" style="${active?`color:${rc.navColor};font-weight:700`:''}"">${n.lbl}</span>`;
+    return `<button class="nav-btn${active?' active':''}" onclick="setTab('${n.id}')">${badge}<div style="position:relative">${ic}</div>${lbl}${under}</button>`;
+  }).join('');
+  el.innerHTML = `<nav class="bottom-nav"><div class="nav-items">${items}</div></nav>`;
+}
+
+// ── LANDING ───────────────────────────────────────────────────────
+function landingHTML() {
+  const roles = [
+    {id:'landlord',ic:'home',title:'Landlord / Property Owner',desc:'Post showings, find service pros',color:'#1A5C6B'},
+    {id:'agent',ic:'key',title:'Agent / Showing Pro',desc:'Claim showing jobs, earn on your schedule',color:'#C8924A'},
+    {id:'pro',ic:'wrench',title:'Service Pro',desc:'Cleaning, handyman, laundry & more',color:'#2D7D59'},
+  ];
+  const feats = {
+    landlord:['Post unlimited bids & showing requests','Browse vetted agents & service pros','Real-time bid boosting','Escrow payment protection','In-app negotiation & messaging'],
+    agent:['Claim jobs in real time','Set your own rates','Counter-offer & negotiate in-app','Escrow ensures you always get paid','Build a recurring client base'],
+    pro:['Cleaning, handyman, laundry jobs & more','Claim recurring STR turnover jobs','Built-in checklist & photo proof','Escrow ensures you always get paid','Counter-offer & negotiate in-app'],
+  };
+  const how = [['list','Post your need','Landlord posts a showing or service request with a bid'],['bolt','Pros grab it','Nearby vetted pros see your bid in their live feed'],['msg','Negotiate & agree','Chat, counter-offer, and lock in the right price'],['shield','Escrow protects you','Payment held until job is complete and approved']];
+
+  if (!S.selectedRole) {
+    const roleCards = roles.map(r => `
+      <button class="card" onclick="S.selectedRole='${r.id}';render()" style="width:100%;padding:18px 20px;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;margin-bottom:10px">
+        ${iconBadge(r.ic,44,20,`${r.color}18`,r.color)}
+        <div style="flex:1"><div class="fw700 fs15 text-navy">${r.title}</div><div class="fs12 text-mid mt2">${r.desc}</div></div>
+        ${icon('chevron',18,'#8A9BAA')}
+      </button>`).join('');
+    const howCards = how.map(([ic,ttl,desc]) => `
+      <div class="glass flex items-center gap14 mb8" style="padding:14px 16px;border-radius:16px">
+        ${iconBadge(ic,38,17,'rgba(200,146,74,0.15)','#C8924A')}
+        <div><div class="fw700 fs13 text-navy">${ttl}</div><div class="fs12 text-mid mt2">${desc}</div></div>
+      </div>`).join('');
+    return `<div style="padding:50px 24px 40px">
+      <div class="center mb36">
+        <div style="display:inline-block;background:rgba(26,92,107,0.1);border-radius:30px;padding:5px 14px;margin-bottom:18px">
+          <span style="font-size:11px;font-weight:700;color:#1A5C6B;letter-spacing:1.5px;text-transform:uppercase">Property Services, On Demand</span>
+        </div>
+        <h1 class="serif" style="font-size:48px;font-weight:700;color:#0F2B3D;line-height:1.1;letter-spacing:-1px;margin:0 0 14px">Show it.<br>Book it.<br><span style="color:#1A5C6B;font-style:italic">Done.</span></h1>
+        <p class="fs15 text-mid lh16" style="max-width:300px;margin:0 auto">Connect remote landlords with vetted local agents & service pros — in minutes.</p>
+      </div>
+      <div class="fs13 fw600 text-light center mb14">I am a...</div>
+      ${roleCards}
+      <div style="margin-top:36px">
+        <div class="fs11 fw700 text-light center mb14" style="letter-spacing:1.5px;text-transform:uppercase">How ṢOMI Works</div>
+        ${howCards}
+      </div>
+    </div>`;
+  }
+
+  const r = roles.find(x=>x.id===S.selectedRole);
+  const flist = (feats[S.selectedRole]||[]).map(f=>`<div class="flex gap8 items-center mb8"><span style="color:#2D7D59;font-size:14px;flex-shrink:0">${icon('check',14,'#2D7D59',2.5)}</span><span class="fs13 text-mid">${f}</span></div>`).join('');
+  return `<div style="padding:50px 24px 40px">
+    <div class="card p24 mb16">
+      <div class="flex gap12 items-center mb12">
+        ${iconBadge(r.ic,44,20,`${r.color}18`,r.color)}
+        <div><div class="fw800 fs17 text-navy">${r.title}</div>
+        <div class="fw900" style="font-size:22px;color:${r.color}">${r.id==='landlord'?'$19/mo':'Free to join'}</div></div>
+      </div>
+      <div class="fs12 text-mid mb16">${r.id==='landlord'?'Unlimited listings + pay per showing':'Keep 90% of every job. Background check required.'}</div>
+      ${flist}
+    </div>
+    <button class="btn btn-navy btn-block btn-lg" onclick="startSignup('${r.id}')">Get Started →</button>
+    <div class="center mt12"><button style="background:none;border:none;color:#8A9BAA;font-size:13px;cursor:pointer" onclick="S.selectedRole=null;render()">← Back</button></div>
+  </div>`;
+}
+
+// ── LANDLORD ──────────────────────────────────────────────────────
+function landlordHTML() {
+  if (S.viewBid) return bidDetailHTML(S.viewBid);
+
+  const tabs = [['browse','Agents'],['pm','Prop Mgmt'],['bids','Active Bids'],['history','History']];
+  const tabBar = tabs.map(([id,lbl])=>`<button class="tab-btn${S.llTab===id?' active':''}" onclick="S.llTab='${id}';render()">${lbl}</button>`).join('');
+  let content = '';
+  if (S.llTab==='browse') content = browseAgentsHTML();
+  else if (S.llTab==='pm') content = pmHTML();
+  else if (S.llTab==='bids') content = activeBidsHTML();
+  else if (S.llTab==='history') content = `<div class="glass p28 center r16">${iconBadge('list',52,24,'rgba(15,43,61,0.06)','#8A9BAA')}<div class="text-mid mt16">8 completed showings · 4 rentals filled via ṢOMI</div></div>`;
+
+  const postBtn = `<button class="btn btn-primary" onclick="S.postModal=true;render()">+ Post Request</button>`;
+  const stats = [['cal','12','Showings','#1A5C6B'],['dollar','$58','Avg. Cost','#C8924A'],['check','8','Filled','#2D7D59']].map(([ic,v,l,c])=>`
+    <div class="glass stat-card">${iconBadge(ic,30,14,`${c}15`,c)}<div class="stat-val">${v}</div><div class="stat-lbl">${l}</div></div>`).join('');
+
+  return `
+    <div class="flex justify-between items-center mb20">
+      <div><div class="fw800 fs22 text-navy">My Properties</div><div class="fs13 text-mid">3 active · 2 upcoming showings</div></div>
+      ${postBtn}
+    </div>
+    <div class="stat-grid">${stats}</div>
+    <div class="tab-bar">${tabBar}</div>
+    ${content}
+    ${postModalHTML()}
+  `;
+}
+
+function browseAgentsHTML() {
+  const cards = AGENTS.map(a=>`
+    <button class="card card-btn" style="padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px" onclick="S.viewProfile={person:${JSON.stringify(a).replace(/"/g,'&quot;')},isPM:false};renderModal()">
+      ${avatar(a.ini,48,a.color)}
+      <div style="flex:1">
+        <div class="flex items-center gap8 mb2">
+          <span class="fw700 fs14 text-navy">${a.name}</span>
+          <span class="tag ${a.badge==='Elite'?'tag-gold':'tag-teal'}">${a.badge}</span>
+        </div>
+        <div class="fs12 text-mid mb3">${a.city} · ${a.spec}</div>
+        <div>${stars(a.rating)} <span class="fs11 text-light">(${a.rc})</span></div>
+      </div>
+      <div class="text-right">
+        <div class="fw800 fs20 text-teal">$${a.rate}</div>
+        <div class="fs10 text-light">per showing</div>
+        <div class="fs11 text-teal fw600 mt4">View Profile →</div>
+      </div>
+    </button>`).join('');
+  return `<div class="fs12 text-mid mb12">Tap any agent to see their full profile, rates, and reviews.</div>${cards}`;
+}
+
+function pmHTML() {
+  const banner = `<div class="glass mb16 r16" style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start">
+    ${iconBadge('building',44,20,'rgba(58,92,139,0.1)','#3A5C8B')}
+    <div><div class="fw700 fs14 text-navy mb4">What is Property Management?</div>
+    <div class="fs12 text-mid lh16">A property manager handles day-to-day ops — tenant screening, rent collection, maintenance, and reporting — so you don't have to.</div></div>
+  </div>`;
+  const postPM = `<button class="btn btn-block mb20" style="padding:13px 0;font-size:14px;background:linear-gradient(135deg,#3A5C8B,#4A6FA5);color:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(58,92,139,.3)" onclick="S.postModal=true;render()">+ Post Property Management Request</button>`;
+  const cards = PM_PROS.map(pm=>`
+    <button class="card card-btn border-left-teal" style="padding:16px 18px;margin-bottom:12px;display:flex;gap:12px;align-items:center" onclick="S.viewProfile={person:${JSON.stringify(pm).replace(/"/g,'&quot;')},isPM:true};renderModal()">
+      ${avatar(pm.ini,52,'#3A5C8B')}
+      <div style="flex:1">
+        <div class="flex items-center gap8 mb2">
+          <span class="fw700 fs14 text-navy">${pm.name}</span>
+          <span class="tag tag-pm">${pm.badge}</span>
+        </div>
+        <div class="fs12 text-mid mb4">${pm.city} · ${pm.units} units managed</div>
+        <div>${stars(pm.rating)} <span class="fs11 text-light">(${pm.rc})</span></div>
+      </div>
+      <div class="text-right">
+        <div class="fw800 fs18" style="color:#3A5C8B">${pm.fee}</div>
+        <div class="fs10 text-light">of monthly rent</div>
+        <div class="fs10 text-light mt2">or ${pm.feeAlt}</div>
+        <div class="fs11 fw600 mt6" style="color:#3A5C8B">View Profile →</div>
+      </div>
+    </button>`).join('');
+  return banner + postPM + `<div class="fs12 text-mid mb12">Tap to see full services, fees, and reviews.</div>` + cards;
+}
+
+function activeBidsHTML() {
+  const bids = getBids();
+  let posted = '';
+  if (S.postedBid) {
+    posted = `<div class="glass border-left-green mb14 r16" style="padding:14px 18px">
+      <div class="fw700 text-green fs13 mb4">${icon('check',14,'#2D7D59',2.5)} Your Bid is Live!</div>
+      <div class="fw600 fs14 text-navy">${S.postedBid.address}</div>
+      <div class="fs12 text-mid">${S.postedBid.type} · ${S.postedBid.date} ${S.postedBid.time} · $${S.postedBid.amount}</div>
+      <div class="flex gap8 mt10"><span class="tag tag-urgent">0 pros viewing</span></div>
+    </div>`;
+  }
+  const cards = bids.map(b => {
+    const offerCount = (b.interested||[]).filter(p=>p.offer!==null).length;
+    const accepted = (b.interested||[]).find(p=>p.offerStatus==='accepted');
+    const badge = accepted ? `<span class="tag tag-green">${icon('check',10,'#2D7D59',2.5)} ${accepted.name}</span>`
+      : offerCount > 0 ? `<span class="tag tag-gold">${icon('offer',10,'#C8924A',1.5)} ${offerCount} offer${offerCount>1?'s':''}</span>`
+      : `<span class="tag">${icon('eye',10,'#8A9BAA',1.5)} ${(b.interested||[]).length} viewing</span>`;
+    return `<button class="card card-btn overflow-hidden relative" style="padding:18px 20px;margin-bottom:12px;display:block;width:100%" onclick="S.viewBid=getBids().find(x=>x.id===${b.id});render()">
+      ${b.urgency==='hot'?'<div class="urgency-bar"></div>':''}
+      <div class="flex justify-between items-start mb10">
+        <div class="flex gap10 items-center">
+          ${iconBadge(b.thumb,40,18,'rgba(15,43,61,0.06)','#1A5C6B')}
+          <div><div class="fw700 fs13 text-navy">${b.property}</div><div class="fs12 text-mid">${b.type} · ${b.time}</div></div>
+        </div>
+        ${statusTag(b.status)}
+      </div>
+      <div class="flex justify-between items-center">
+        <div><span class="fw900 fs26 text-teal">$${b.bid}</span>${b.boosts>0?`<div class="fs11 text-orange">↑ Boosted ${b.boosts}×</div>`:''}</div>
+        <div class="flex items-center gap8">${badge}${icon('chevron',16,'#8A9BAA')}</div>
+      </div>
+    </button>`;
+  }).join('');
+  return `<div class="fs12 text-mid mb12">Tap any bid to see offers, manage pros, and track status.</div>${posted}${cards}`;
+}
+
+function postModalHTML() {
+  if (!S.postModal) return '';
+  return `<div class="overlay" onclick="closeOverlay(event)">
+    <div class="card modal-box">
+      <div class="fw800 fs18 text-navy mb4">Post a Request</div>
+      <div class="fs13 text-mid mb20">Pros nearby see your post instantly.</div>
+      <div class="mb12"><label class="form-label">Property Address</label><input class="form-input" id="post-addr" placeholder="123 Main St, Cincinnati OH"></div>
+      <div class="mb12 flex gap10">
+        <div style="flex:1"><label class="form-label">Date</label><input class="form-input" id="post-date" type="date"></div>
+        <div style="flex:1"><label class="form-label">Time</label><input class="form-input" id="post-time" type="time"></div>
+      </div>
+      <div class="mb12"><label class="form-label">Your Bid ($)</label><input class="form-input" id="post-amount" type="number" placeholder="50"></div>
+      <div class="mb16"><label class="form-label">Request Type</label>
+        <select class="form-select" id="post-type">
+          ${['STR Showing','MTR Showing','LTR Showing','Cleaning Turnover','Handyman Service','Repair Service','Property Management','Tenant Placement'].map(o=>`<option>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div class="flex gap10">
+        <button class="btn btn-ghost" style="flex:1" onclick="S.postModal=false;render()">Cancel</button>
+        <button class="btn btn-primary" style="flex:2" onclick="submitPost()">Post →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── BID DETAIL ────────────────────────────────────────────────────
+function bidDetailHTML(bid) {
+  const timeline = [
+    {step:'Posted',done:true,time:bid.posted},
+    {step:'Pros Notified',done:true,time:'Instantly'},
+    {step:'Offers Received',done:(bid.interested||[]).some(p=>p.offer),time:(bid.interested||[]).some(p=>p.offer)?'In negotiation':'Waiting...'},
+    {step:'Offer Accepted',done:(bid.interested||[]).some(p=>p.offerStatus==='accepted'),time:(bid.interested||[]).some(p=>p.offerStatus==='accepted')?'Confirmed':'Pending'},
+    {step:'Job Complete',done:false,time:bid.time},
+  ];
+  const tlHTML = timeline.map((s,i)=>`
+    <div class="flex gap12 items-start${i<timeline.length-1?' mb12':''}">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div class="timeline-dot" style="background:${s.done?'#2D7D59':'rgba(15,43,61,0.12)'}">
+          ${s.done?icon('check',11,'#fff',2.5):''}
+        </div>
+        ${i<timeline.length-1?`<div class="timeline-line" style="background:${s.done?'rgba(45,125,89,0.3)':'rgba(15,43,61,0.08)'}"></div>`:''}
+      </div>
+      <div style="padding-top:1px">
+        <div class="fw600 fs13" style="color:${s.done?'#0F2B3D':'#8A9BAA'}">${s.step}</div>
+        <div class="fs11 text-light">${s.time}</div>
+      </div>
+    </div>`).join('');
+
+  const proCards = (bid.interested||[]).map((pro,idx)=>{
+    const ac=pro.offerStatus==='accepted', dc=pro.offerStatus==='declined', hasOffer=pro.offer!==null, viewing=pro.offerStatus==='viewing';
+    let offerHTML = '';
+    if (hasOffer && !viewing) {
+      let actions = '';
+      if (!ac && !dc) {
+        actions = `<div class="flex gap8 mt10">
+          <button class="btn btn-green" style="flex:1;padding:9px 0" onclick="acceptOffer(${bid.id},${idx})">Accept · $${pro.offer} to Escrow</button>
+          <button style="width:44px;background:rgba(192,57,43,0.1);color:#C0392B;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer" onclick="declineOffer(${bid.id},${idx})">✕</button>
+        </div>`;
+      } else if (ac) {
+        actions = `<div class="fw600 fs12 text-green mt6">${icon('check',12,'#2D7D59',2.5)} $${pro.offer} held in escrow · Released on completion</div>`;
+      }
+      const save = pro.offer < bid.bid ? `<span class="tag tag-green fs11 ml8">Save $${bid.bid-pro.offer}</span>` : '';
+      offerHTML = `<div style="background:${ac?'#EAF5F0':'rgba(200,146,74,0.07)'};border-radius:12px;padding:12px 14px;border:1.5px solid ${ac?'rgba(45,125,89,0.3)':'rgba(200,146,74,0.3)'};margin-top:12px">
+        <div class="fs11 fw700 ls08" style="color:#C8924A;text-transform:uppercase">${ac?'Accepted Offer':'Offer Received'}</div>
+        <div class="flex items-baseline gap8 mt2">
+          <span class="fw900" style="font-size:26px;color:${ac?'#2D7D59':'#0F2B3D'}">$${pro.offer}</span>
+          ${pro.offer<bid.bid?`<span class="fs11 text-light" style="text-decoration:line-through">$${bid.bid}</span>`:''}${save}
+        </div>
+        ${pro.offerNote?`<div class="fs12 text-mid italic mt4">"${pro.offerNote}"</div>`:''}
+        ${actions}
+      </div>`;
+    }
+    return `<div class="card" style="padding:16px 18px;margin-bottom:12px;border-left:4px solid ${ac?'#2D7D59':dc?'rgba(15,43,61,0.1)':'#C8924A'};opacity:${dc?0.5:1}">
+      <div class="flex items-center gap12">
+        ${avatar(pro.ini,44,'#1A5C6B')}
+        <div style="flex:1">
+          <div class="flex items-center gap8 mb2"><span class="fw700 fs14 text-navy">${pro.name}</span><span class="tag tag-teal">${pro.badge}</span></div>
+          <div class="fs12 text-mid">Standard rate: $${pro.rate}/showing</div>
+        </div>
+        ${viewing?`<span class="tag">${icon('eye',10,'#8A9BAA',1.5)} Viewing</span>`:''}
+        ${ac?`<span class="tag tag-green">Confirmed</span>`:''}
+        ${dc?`<span class="tag" style="background:#FDECEA;color:#C0392B">Declined</span>`:''}
+      </div>
+      ${offerHTML}
+    </div>`;
+  }).join('');
+
+  const boosted = S.boosted.has(bid.id);
+  return `
+    <div class="flex items-center gap12 mb20">
+      <button class="back-btn" onclick="S.viewBid=null;render()">←</button>
+      <div style="flex:1"><div class="fw700 fs16 text-navy">${bid.type}</div><div class="fs12 text-mid">${bid.property.split(',')[0]}</div></div>
+      ${statusTag(bid.status)}
+    </div>
+    <div class="card overflow-hidden relative" style="padding:18px 20px;margin-bottom:16px">
+      ${bid.urgency==='hot'?'<div class="urgency-bar"></div>':''}
+      <div class="flex justify-between items-start mb14">
+        <div>
+          <div class="fs11 text-light mb2">Current Bid</div>
+          <div class="fw900 text-teal" style="font-size:36px;line-height:1">$${bid.bid}</div>
+          ${bid.boosts>0?`<div class="fs11 text-orange mt2">↑ Boosted ${bid.boosts}× from $${bid.originalBid}</div>`:''}
+        </div>
+        <div class="text-right">${urgencyTag(bid.urgency)}<div class="fs12 text-mid mt6">Posted ${bid.posted}</div></div>
+      </div>
+      <div class="flex gap8 wrap mb14">
+        <span class="tag">${icon('pin',11,'#8A9BAA')} ${bid.address}</span>
+        <span class="tag">${icon('clock',11,'#8A9BAA')} ${bid.time}</span>
+        <span class="tag">${icon('home',11,'#8A9BAA')} ${bid.beds}bd/${bid.baths}ba</span>
+      </div>
+      ${bid.notes?`<div style="background:rgba(15,43,61,0.04);border-radius:10px;padding:10px 12px;font-size:13px;color:#4A6070;line-height:1.5;margin-bottom:14px;font-style:italic">"${bid.notes}"</div>`:''}
+      <div class="flex gap8">
+        ${!boosted?`<button class="btn btn-gold" style="flex:1;padding:10px 0" onclick="boostBid(${bid.id})">${icon('trend',14,'#fff')} Boost +$25</button>`:`<span class="tag tag-urgent">Bid Boosted</span>`}
+        <button class="btn btn-ghost" style="flex:1;padding:10px 0" onclick="S.editBid=true;render()">${icon('edit',14,'#4A6070')} Edit</button>
+        <button style="width:44px;background:rgba(192,57,43,0.08);color:#C0392B;border:none;border-radius:12px;cursor:pointer;font-size:16px" onclick="S.cancelBid=true;render()">${icon('trash',16,'#C0392B')}</button>
+      </div>
+    </div>
+    <div class="glass r16 mb16" style="padding:16px 18px">
+      <div class="fw700 fs13 text-navy mb12">${icon('trend',14,'#0F2B3D')} Status Timeline</div>
+      ${tlHTML}
+    </div>
+    <div class="fw700 fs15 text-navy mb12">${(bid.interested||[]).length} Pro${(bid.interested||[]).length!==1?'s':''} Interested</div>
+    ${(bid.interested||[]).length===0?`<div class="glass p24 center r16">${iconBadge('clock',48,22,'rgba(15,43,61,0.06)','#8A9BAA')}<div class="text-mid mt16">No pros yet. Boost your bid to get more visibility.</div></div>`:''}
+    ${proCards}
+    ${S.editBid?editBidModalHTML(bid):''}
+    ${S.cancelBid?cancelBidModalHTML(bid):''}
+  `;
+}
+
+function editBidModalHTML(bid) {
+  return `<div class="overlay" onclick="closeOverlay(event)">
+    <div class="card modal-box">
+      <div class="fw800 fs17 text-navy mb4">Edit Bid</div>
+      <div class="fs13 text-mid mb18">Changes notify all interested pros instantly.</div>
+      <div class="mb14"><label class="form-label">Bid Amount ($)</label><input class="form-input" id="edit-amount" type="number" value="${bid.bid}"></div>
+      <div class="mb18"><label class="form-label">Notes for Pros</label><textarea class="form-textarea" id="edit-notes" rows="3">${bid.notes||''}</textarea></div>
+      <div class="flex gap10">
+        <button class="btn btn-ghost" style="flex:1" onclick="S.editBid=false;render()">Cancel</button>
+        <button class="btn btn-primary" style="flex:2" onclick="S.editBid=false;render()">Save Changes</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function cancelBidModalHTML(bid) {
+  const hasPending = (bid.interested||[]).some(p=>p.offerStatus==='pending');
+  return `<div class="overlay" onclick="closeOverlay(event)">
+    <div class="card modal-box">
+      <div class="fw800 fs17 text-navy mb8">Cancel this bid?</div>
+      <div class="fs13 text-mid lh16 mb20">${hasPending?'There are pending offers on this bid. Cancelling will notify all interested pros.':'This will remove your bid from the live feed.'}</div>
+      <div class="flex gap10">
+        <button class="btn btn-ghost" style="flex:1" onclick="S.cancelBid=false;render()">Keep Bid</button>
+        <button class="btn btn-red" style="flex:2" onclick="S.cancelBid=false;S.viewBid=null;render()">Yes, Cancel Bid</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── AGENT ─────────────────────────────────────────────────────────
+function agentHTML() {
+  const bids = getAgBids().filter(b => !S.agClaimed.find(c=>c.id===b.id));
+  const tabs = [['feed','Live Feed'],['mine',`My Jobs (${S.agClaimed.length})`],['profile','My Profile']];
+  const tabBar = tabs.map(([id,lbl])=>`<button class="tab-btn${S.agTab===id?' active':''}" onclick="S.agTab='${id}';render()">${lbl}</button>`).join('');
+  const stats = [['dollar','$540','This Month','#2D7D59'],['check','9','Completed','#1A5C6B'],['star','4.9★','Rating','#C8924A']].map(([ic,v,l,c])=>`
+    <div class="glass stat-card">${iconBadge(ic,30,14,`${c}15`,c)}<div class="stat-val" style="font-size:18px">${v}</div><div class="stat-lbl">${l}</div></div>`).join('');
+
+  let content = '';
+  if (S.agTab==='feed') {
+    const feedCards = bids.map(b=>`
+      <button class="card card-btn overflow-hidden relative" style="padding:18px 20px;margin-bottom:14px" onclick="S.agViewJob=getAgBids().find(x=>x.id===${b.id});renderSheet()">
+        ${b.urgency==='hot'?'<div class="urgency-bar"></div>':''}
+        <div class="flex justify-between items-start mb10">
+          <div class="flex gap10">
+            ${iconBadge(b.thumb,40,18,'rgba(15,43,61,0.06)','#1A5C6B')}
+            <div><div class="fw700 fs13 text-navy">${b.property}</div><div class="fs12 text-mid">${b.type} · ${b.time}</div></div>
+          </div>
+          ${urgencyTag(b.urgency)}
+        </div>
+        <div class="flex justify-between items-center">
+          <div><span class="fw900 fs28 text-teal">$${b.bid}</span>${b.boosts>0?`<div class="fs11 text-orange">↑ Boosted ${b.boosts}×</div>`:''}</div>
+          <div class="flex items-center gap8"><span class="fs12 text-mid fw600">Tap to view</span>${icon('chevron',16,'#8A9BAA')}</div>
+        </div>
+      </button>`).join('');
+    const liveBar = `<div class="glass mb14 r14" style="padding:8px 14px;display:inline-flex;align-items:center;gap:8px">
+      <div class="live-dot"></div><span class="fs12 fw600 text-green">Live</span>
+    </div>`;
+    content = bids.length===0?`<div class="glass p28 center r16">${iconBadge('check',52,24,'rgba(45,125,89,0.1)','#2D7D59')}<div class="text-mid mt16">All bids claimed — check back soon.</div></div>`:liveBar+feedCards;
+  } else if (S.agTab==='mine') {
+    content = S.agClaimed.length===0?`<div class="glass p24 center r16 text-mid">No claimed jobs yet.</div>`:
+      S.agClaimed.map(b=>`<div class="card" style="padding:16px 18px;margin-bottom:12px">
+        <div class="flex justify-between mb8">
+          <div><div class="fw700 text-navy">${b.property}</div><div class="fs12 text-mid">${b.type} · ${b.time}</div></div>
+          <span class="fw800 fs20 text-green">$${b.bid}</span>
+        </div>
+        <div class="flex gap8"><span class="tag tag-green">Confirmed</span><span class="tag tag-teal">${icon('lock',10,'#1A5C6B')} Escrow</span></div>
+      </div>`).join('');
+  } else {
+    content = `<div class="card p22 mb12">
+      <div class="flex gap14 items-center mb16">
+        ${avatar('ME',56,'#1A5C6B')}
+        <div><div class="fw800 fs17 text-navy">Your Profile</div><div class="fs12 text-mid">Cincinnati, OH · Verified</div>${stars(4.9)}</div>
+      </div>
+      ${[['STR/MTR Showing','$55'],['LTR Showing','$40'],['Open House','$80']].map(([t,p])=>`
+        <div class="flex justify-between" style="padding:9px 0;border-bottom:1px solid rgba(15,43,61,0.06)">
+          <span class="fs13 text-mid">${t}</span><span class="fw700 text-teal">${p}</span>
+        </div>`).join('')}
+    </div>
+    <div class="glass r14" style="padding:13px 16px;display:flex;justify-content:space-between;align-items:center">
+      <div class="flex gap10 items-center">${icon('shield',16,'#1A5C6B')}<span class="fs13 fw600 text-navy">Background Check</span></div>
+      <span class="tag tag-green">Cleared</span>
+    </div>`;
+  }
+  return `
+    <div class="flex justify-between items-center mb20">
+      <div><div class="fw800 fs22 text-navy">Available Jobs</div><div class="fs13 text-mid">${bids.length} open near you</div></div>
+    </div>
+    <div class="stat-grid">${stats}</div>
+    <div class="tab-bar">${tabBar}</div>
+    ${content}
+  `;
+}
+
+// ── SERVICE PRO ───────────────────────────────────────────────────
+function proHTML() {
+  if (S.proActiveJob && S.proTab==='active') return proActiveJobHTML();
+  const jobs = getProJobs().filter(j=>!S.proMyJobs.find(m=>m.id===j.id));
+  const tabs = [['feed','Jobs'],['mine','Mine'],['schedule','Schedule'],['profile','Profile']];
+  const tabBar = tabs.map(([id,lbl])=>`<button class="tab-btn${S.proTab===id?' active':''}" onclick="S.proTab='${id}';render()">${lbl}</button>`).join('');
+  const stats = [['dollar','$340','This Week','#2D7D59'],['check','14','Jobs Done','#1A5C6B'],['repeat','3','Recurring','#C8924A']].map(([ic,v,l,c])=>`
+    <div class="glass stat-card">${iconBadge(ic,30,14,`${c}15`,c)}<div class="stat-val" style="font-size:18px">${v}</div><div class="stat-lbl">${l}</div></div>`).join('');
+
+  let content = '';
+  if (S.proTab==='feed') {
+    const chips = ['All','Cleaning','Handyman','Locks','Laundry'].map((f,i)=>`
+      <span class="nowrap" style="background:${i===0?'#1A5C6B':'rgba(255,255,255,0.85)'};color:${i===0?'#fff':'#4A6070'};border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.9)">${f}</span>`).join('');
+    const cards = jobs.map(j=>`
+      <button class="card card-btn overflow-hidden relative" style="padding:18px 20px;margin-bottom:14px" onclick="S.proViewJob=getProJobs().find(x=>x.id===${j.id});renderSheet()">
+        ${j.urgency==='hot'?'<div class="urgency-bar"></div>':''}
+        <div class="flex justify-between mb10">
+          <div class="flex gap10">${iconBadge(j.icon,40,18,'rgba(26,92,107,0.08)','#1A5C6B')}
+            <div><div class="fw700 fs13 text-navy">${j.type}</div><div class="fs12 text-mid">${j.prop}</div></div>
+          </div>${urgencyTag(j.urgency)}
+        </div>
+        <div class="flex gap6 wrap mb10">
+          <span class="tag">${j.beds}bd / ${j.baths}ba</span>
+          <span class="tag">${j.sqft} sqft</span>
+          <span class="tag">${j.time}</span>
+          ${j.recurring?'<span class="tag tag-green">Recurring</span>':''}
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="fw900 fs26 text-teal">$${j.bid}</span>
+          <div class="flex items-center gap8"><span class="fs12 text-mid fw600">Tap to view</span>${icon('chevron',16,'#8A9BAA')}</div>
+        </div>
+      </button>`).join('');
+    const liveBar = `<div class="glass mb14 r14" style="padding:8px 14px;display:inline-flex;align-items:center;gap:8px">
+      <div class="live-dot"></div><span class="fs12 fw600 text-green">Live</span></div>`;
+    content = `<div class="flex gap6 mb14" style="overflow-x:auto;padding-bottom:4px">${chips}</div>${liveBar}${jobs.length===0?`<div class="glass p28 center r16 text-mid">All jobs claimed</div>`:cards}`;
+  } else if (S.proTab==='mine') {
+    content = S.proMyJobs.length===0?`<div class="glass p24 center r16 text-mid">Claim a job from the feed to get started.</div>`:
+      S.proMyJobs.map(j=>`<div class="card" style="padding:16px 18px;margin-bottom:12px">
+        <div class="flex justify-between mb8">
+          <div class="flex gap8">${iconBadge(j.icon,36,16,'rgba(26,92,107,0.08)','#1A5C6B')}
+            <div><div class="fw700 text-navy">${j.type}</div><div class="fs12 text-mid">${j.prop.split(',')[0]} · ${j.time}</div></div>
+          </div><span class="fw800 fs18 text-green">$${j.bid}</span>
+        </div>
+        <div class="flex gap8">
+          <span class="tag tag-teal">${icon('lock',10,'#1A5C6B')} Escrow Held</span>
+          <button class="btn btn-primary" style="padding:4px 14px;font-size:11px;border-radius:20px" onclick="startJob(${j.id})">Start Job →</button>
+        </div>
+      </div>`).join('');
+  } else if (S.proTab==='schedule') {
+    const sched = [
+      {day:'Today',items:[{time:'11:00 AM',job:'STR Turnover',addr:'Rachel St',color:'#1A5C6B',rec:true}]},
+      {day:'Thursday',items:[{time:'11:00 AM',job:'STR Turnover',addr:'Rachel St',color:'#1A5C6B',rec:true}]},
+      {day:'Friday',items:[{time:'2:00 PM',job:'Lock Change',addr:'Maple Ave',color:'#5A3A6B',rec:false}]},
+      {day:'Saturday',items:[{time:'9:00 AM',job:'Deep Clean',addr:'Clifton Ave',color:'#2D7D59',rec:false},{time:'11:00 AM',job:'STR Turnover',addr:'Rachel St',color:'#1A5C6B',rec:true}]},
+    ];
+    content = sched.map(d=>`<div class="mb12">
+      <div class="fs11 fw700 text-light mb6" style="text-transform:uppercase;letter-spacing:1px">${d.day}</div>
+      ${d.items.map(it=>`<div class="glass mb6 r14" style="padding:11px 14px;display:flex;align-items:center;gap:10px">
+        <div style="width:4px;height:36px;border-radius:4px;background:${it.color};flex-shrink:0"></div>
+        <div style="flex:1"><div class="fw700 fs13 text-navy">${it.job}</div><div class="fs12 text-mid">${it.time} · ${it.addr}</div></div>
+        ${it.rec?'<span class="tag tag-green">Recurring</span>':''}
+      </div>`).join('')}
+    </div>`).join('');
+  } else {
+    content = `<div class="card p20 mb12">
+      <div class="flex gap14 items-center mb14">${avatar('JP',56,'#2D7D59')}
+        <div><div class="fw800 fs17 text-navy">Jordan Pierce</div><div class="fs12 text-mid">Cincinnati, OH · Background Check ✓</div>${stars(4.8)}</div>
+      </div>
+      ${[['STR/MTR Turnover','$120','per job'],['Deep Clean','$0.10','per sqft'],['Handyman','$45','per hour'],['Laundry & Linen','$35','per set']].map(([t,r,u])=>`
+        <div class="flex justify-between items-center" style="padding:9px 0;border-bottom:1px solid rgba(15,43,61,0.06)">
+          <span class="fs13 text-mid">${t}</span><div><span class="fw700 text-teal">${r}</span><span class="fs11 text-light"> ${u}</span></div>
+        </div>`).join('')}
+    </div>
+    ${[['pin','Service Radius','35 miles'],['cal','Availability','Mon–Sat, 8am–6pm'],['repeat','Recurring Jobs','3 active properties']].map(([ic,l,v])=>`
+      <div class="glass mb8 r14" style="padding:13px 16px;display:flex;justify-content:space-between;align-items:center">
+        <div class="flex gap10 items-center">${icon(ic,16,'#1A5C6B')}<span class="fs13 fw600 text-navy">${l}</span></div>
+        <span class="fs13 text-mid">${v}</span>
+      </div>`).join('')}`;
+  }
+  return `
+    <div class="flex justify-between items-center mb20">
+      <div><div class="fw800 fs22 text-navy">Service Jobs</div><div class="fs13 text-mid">${jobs.length} open near Cincinnati</div></div>
+    </div>
+    <div class="stat-grid">${stats}</div>
+    <div class="tab-bar">${tabBar}</div>
+    ${content}
+  `;
+}
+
+function proActiveJobHTML() {
+  const j = S.proActiveJob;
+  const all = CHECKLIST.reduce((a,r)=>a+r.tasks.length,0);
+  const done = Object.values(S.proChecked).filter(Boolean).length;
+  const pct = all ? Math.round(done/all*100) : 0;
+
+  if (S.proPhase==='done') return `<div class="center" style="padding:50px 20px">
+    ${iconBadge('award',72,36,'rgba(200,146,74,0.12)','#C8924A')}
+    <div class="fw800 fs22 text-navy mt16 mb8">Job Complete!</div>
+    <div class="fs14 text-mid mb24">Payment of <strong style="color:#2D7D59">$${j.bid}</strong> released from escrow.</div>
+    ${j.recurring?`<div class="card p18 mb20 text-left">
+      <div class="fw700 text-navy mb4">Lock In Recurring?</div>
+      <div class="fs13 text-mid mb12">Landlord needs turnover every 3 days. Lock it in?</div>
+      <button class="btn btn-green btn-block" style="padding:11px 0">Lock In Recurring</button>
+    </div>`:''}
+    <button class="btn btn-navy" style="padding:13px 32px" onclick="S.proActiveJob=null;S.proTab='mine';S.proPhase='detail';S.proChecked={};render()">Back to Jobs</button>
+  </div>`;
+
+  const phaseTabs = [['detail','Details'],['checklist','Tasks'],['photos','Photos'],['submit','Submit']].map(([id,lbl])=>`
+    <button class="tab-btn${S.proPhase===id?' active':''}" onclick="S.proPhase='${id}';render()" style="font-size:10px">${lbl}</button>`).join('');
+
+  let phaseContent = '';
+  if (S.proPhase==='detail') {
+    phaseContent = `
+      <div class="card mb12" style="padding:16px 18px">
+        <div class="fw700 fs14 text-navy mb10">Scope</div>
+        <div class="flex gap6 wrap mb10"><span class="tag">${j.beds}bd</span><span class="tag">${j.baths}ba</span><span class="tag">${j.sqft} sqft</span></div>
+        <div class="fs13 text-mid lh16">${j.notes}</div>
+      </div>
+      <div class="card mb12" style="padding:16px 18px">
+        <div class="fw700 fs14 text-navy mb8">Property Access</div>
+        <div class="fw700 fs14 text-teal">${j.access}</div>
+        <div class="fs11 text-light mt4">Code hidden after job marked complete.</div>
+      </div>
+      <div class="card mb12" style="padding:16px 18px">
+        <div class="fw700 fs14 text-navy mb8">Supplies Needed</div>
+        ${j.supplies.map(s=>`<div style="font-size:13px;color:#4A6070;padding:5px 0;border-bottom:1px solid rgba(15,43,61,0.05)">• ${s}</div>`).join('')}
+      </div>
+      <div class="glass r14 mb14" style="padding:13px 16px">
+        <div class="flex justify-between items-center">
+          <div><div class="fw600 fs13 text-navy">Extra Scope?</div><div class="fs11 text-mid">Found more work than expected?</div></div>
+          <button class="btn" style="background:rgba(200,146,74,0.15);color:#C8924A;padding:6px 12px;font-size:12px" onclick="S.scopeOpen=!S.scopeOpen;render()">Report</button>
+        </div>
+        ${S.scopeOpen?`<div class="mt12"><textarea class="form-textarea w100" rows="3" placeholder="Describe additional work & proposed cost..."></textarea>
+          <button class="btn btn-gold mt8" style="padding:8px 16px;font-size:12px">Send to Landlord</button></div>`:''}
+      </div>
+      <button class="btn btn-primary btn-block" style="padding:13px 0;font-size:15px" onclick="S.proPhase='checklist';render()">Start Checklist →</button>`;
+  } else if (S.proPhase==='checklist') {
+    const rooms = CHECKLIST.map(room=>`<div class="card mb10" style="padding:14px 16px">
+      <div class="fw700 fs13 text-navy mb8">${room.room}</div>
+      ${room.tasks.map(task=>{const k=`${room.id}-${task}`;const ch=S.proChecked[k];return `
+        <button style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 0;border:none;background:none;cursor:pointer;text-align:left;border-bottom:1px solid rgba(15,43,61,0.05)" onclick="toggleTask('${k}')">
+          <div class="check-box${ch?' done':''}">${ch?icon('check',11,'#fff',2.5):''}</div>
+          <span style="font-size:13px;color:${ch?'#8A9BAA':'#0F2B3D'};text-decoration:${ch?'line-through':'none'}">${task}</span>
+        </button>`}).join('')}
+    </div>`).join('');
+    phaseContent = `
+      <div class="glass r14 mb14" style="padding:13px 16px">
+        <div class="flex justify-between mb6"><span class="fs13 fw600 text-navy">${done}/${all} tasks</span><span class="fs13 fw700" style="color:${pct===100?'#2D7D59':'#1A5C6B'}">${pct}%</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pct===100?'linear-gradient(90deg,#2D7D59,#3AAA75)':'linear-gradient(90deg,#1A5C6B,#2A7F92)'}"></div></div>
+      </div>
+      ${rooms}
+      ${pct===100?`<button class="btn btn-green btn-block mt4" style="padding:13px 0;font-size:15px" onclick="S.proPhase='photos';render()">All Done · Add Photos →</button>`:''}`;
+  } else if (S.proPhase==='photos') {
+    const photos = [['Kitchen — After','Counter, stovetop, sink',true],['Living Room — After','Full room, vacuumed',true],['Bedrooms — After','Made beds, fresh linens',false],['Bathrooms — After','Clean toilet, fresh towels',false]];
+    phaseContent = `
+      <div class="fw700 fs16 text-navy mb4">Before &amp; After Photos</div>
+      <div class="fs13 text-mid mb18">Required to release escrow. Minimum 4 photos.</div>
+      ${photos.map(([lbl,hint,done])=>`<div class="card mb10" style="padding:14px 16px;display:flex;gap:12px;align-items:center">
+        <div onclick="alert('Camera opens in native app')" style="width:58px;height:58px;border-radius:12px;background:${done?'#EAF5F0':'rgba(26,92,107,0.07)'};border:2px dashed ${done?'#2D7D59':'rgba(26,92,107,0.2)'};display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+          ${icon(done?'check':'photo',20,done?'#2D7D59':'#8A9BAA',done?2.5:1.5)}
+          <span style="font-size:9px;color:#8A9BAA;margin-top:2px">${done?'Done':'Tap'}</span>
+        </div>
+        <div><div class="fw600 fs13 text-navy">${lbl}</div><div class="fs11 text-light">${hint}</div></div>
+      </div>`).join('')}
+      <button class="btn btn-primary btn-block mt4" style="padding:13px 0;font-size:15px" onclick="S.proPhase='submit';render()">Continue →</button>`;
+  } else if (S.proPhase==='submit') {
+    phaseContent = `
+      <div class="fw700 fs16 text-navy mb4">Submit for Payment</div>
+      <div class="fs13 text-mid mb18">Landlord approves and escrow releases to you.</div>
+      <div class="card p18 mb14">
+        ${[['check','Checklist',`${done}/${all} tasks`,'#2D7D59'],['photo','Photos','4 uploaded','#1A5C6B'],['lock','Escrow',`$${j.bid} pending`,'#C8924A']].map(([ic,lbl,val,c])=>`
+          <div class="flex justify-between items-center" style="padding:9px 0;border-bottom:1px solid rgba(15,43,61,0.06)">
+            <div class="flex gap8 items-center">${icon(ic,14,c,2)}<span class="fs13 text-mid">${lbl}</span></div>
+            <span class="fs13 fw600 text-navy">${val}</span>
+          </div>`).join('')}
+      </div>
+      <div class="glass r14 mb18" style="padding:12px 16px">
+        <div class="form-label mb6">Note to landlord (optional)</div>
+        <textarea class="form-textarea w100" rows="3" placeholder="e.g. Noticed a crack in the bathroom tile — flagged."></textarea>
+      </div>
+      <button class="btn btn-green btn-block" style="padding:15px 0;font-size:16px;box-shadow:0 6px 20px rgba(45,125,89,0.3)" onclick="S.proPhase='done';render()">Submit &amp; Request Payment</button>`;
+  }
+
+  return `
+    <div class="flex items-center gap12 mb14">
+      <button class="back-btn" onclick="S.proActiveJob=null;S.proTab='mine';render()">←</button>
+      <div style="flex:1"><div class="fw700 fs15 text-navy">${j.type} · ${j.prop.split(',')[0]}</div><div class="fs11 text-mid">$${j.bid} in escrow · ${j.time}</div></div>
+      <span class="tag tag-green">Active</span>
+    </div>
+    <div class="tab-bar" style="gap:3px">${phaseTabs}</div>
+    ${phaseContent}
+  `;
+}
+
+// ── MESSAGES ──────────────────────────────────────────────────────
+function messagesHTML() {
+  if (S.msgThread) return threadHTML(S.msgThread);
+  const stMap = {negotiating:{cls:'tag-urgent',lbl:'Negotiating'},confirmed:{cls:'tag-teal',lbl:'Confirmed'},done:{cls:'tag-green',lbl:'Done'}};
+  const threads = getMsgList();
+  const items = threads.map(t=>{
+    const st = stMap[t.status]||stMap.negotiating;
+    return `<button class="card card-btn" style="padding:16px 18px;margin-bottom:10px;display:flex;gap:12px;align-items:center" onclick="openThread(${t.id})">
+      <div style="position:relative">${avatar(t.ini,46,'#1A5C6B')}${t.unread>0?`<div class="nav-badge" style="right:-2px;top:-2px;border:2px solid #F5F2EC">${t.unread}</div>`:''}</div>
+      <div style="flex:1;min-width:0">
+        <div class="flex justify-between mb2"><span class="fw700 fs14 text-navy">${t.name}</span><span class="fs11 text-light">${t.time}</span></div>
+        <div class="fs11 text-teal fw600 mb3">${t.prop}</div>
+        <div class="fs12 text-mid truncate">${t.last}</div>
+      </div>
+      <span class="tag ${st.cls}">${st.lbl}</span>
+    </button>`;
+  }).join('');
+  return `<div class="flex justify-between items-center mb20">
+    <div><div class="fw800 fs22 text-navy">Messages</div><div class="fs13 text-mid">Negotiate, confirm & coordinate</div></div>
+    <span class="tag tag-urgent">3 unread</span>
+  </div>${items}`;
+}
+
+function threadHTML(t) {
+  const msgs = S.msgList[t.id]||[];
+  const stMap = {negotiating:{cls:'tag-urgent',lbl:'Negotiating'},confirmed:{cls:'tag-teal',lbl:'Confirmed'},done:{cls:'tag-green',lbl:'Done'}};
+  const st = stMap[t.status]||stMap.negotiating;
+  const bubbles = msgs.map(m=>{
+    const me = m.from==='me';
+    if (m.type==='offer') return offerCardHTML(m, me, t.id, m.id);
+    return `<div class="flex${me?' justify-end':''} mb8 items-end gap8">
+      ${!me?avatar(t.ini,28,'#1A5C6B'):''}
+      <div style="max-width:72%">
+        <div class="${me?'msg-bubble-me':'msg-bubble-them'}" style="padding:10px 14px;font-size:13px;line-height:1.5">${m.text}</div>
+        <div class="msg-time ${me?'text-right':''}">${m.time}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const offerComposer = S.msgOfferMode ? `
+    <div class="card mb12" style="padding:14px 16px;border:1.5px solid rgba(200,146,74,0.3)">
+      <div class="fw700 fs13 text-navy mb10">${S.msgCounterTarget?`Counter-Offer — was $${S.msgCounterTarget.amount}`:'Send an Offer'}</div>
+      <div style="display:flex;align-items:center;background:#fff;border:1.5px solid #C8924A;border-radius:12px;padding:0 12px;margin-bottom:10px">
+        <span class="fw800 fs20 text-teal">$</span>
+        <input type="number" id="offer-amt" value="${S.msgOfferAmt}" placeholder="70" style="border:none;outline:none;font-size:22px;font-weight:800;width:100%;padding:10px 6px;color:#0F2B3D;font-family:'DM Sans',sans-serif">
+      </div>
+      <input type="text" id="offer-note" value="${S.msgOfferNote}" placeholder="Add a note (optional)..." class="form-input mb10">
+      <div class="flex gap8">
+        <button class="btn btn-ghost" style="flex:1" onclick="S.msgOfferMode=false;S.msgCounterTarget=null;S.msgOfferAmt='';S.msgOfferNote='';render()">Cancel</button>
+        <button class="btn btn-gold" style="flex:2" onclick="sendOffer(${t.id})">Send Offer</button>
+      </div>
+    </div>` : '';
+
+  const inputBar = !S.msgOfferMode ? `<div style="display:flex;gap:8px;align-items:center;padding-top:10px;border-top:1px solid rgba(15,43,61,0.07)">
+    <div style="flex:1;display:flex;align-items:center;background:rgba(255,255,255,0.88);border:1.5px solid rgba(255,255,255,.95);border-radius:22px;padding:4px 6px 4px 14px">
+      <input type="text" id="msg-input" placeholder="Message..." style="flex:1;border:none;outline:none;font-size:14px;background:transparent;font-family:'DM Sans',sans-serif">
+      <button onclick="sendMsg(${t.id})" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#0F2B3D,#1A5C6B);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">${icon('chevron',14,'#fff',2)}</button>
+    </div>
+  </div>` : '';
+
+  return `
+    <div class="flex items-center gap12 mb12">
+      <button class="back-btn" onclick="S.msgThread=null;S.msgOfferMode=false;render()">←</button>
+      ${avatar(t.ini,40,'#1A5C6B')}
+      <div style="flex:1"><div class="fw700 fs15 text-navy">${t.name}</div><div class="fs11 text-mid">${t.role} · ${t.prop}</div></div>
+      <span class="tag ${st.cls}">${st.lbl}</span>
+    </div>
+    <div class="glass r14 mb12" style="padding:9px 14px;display:flex;align-items:center;gap:10px">
+      ${icon('home',16,'#1A5C6B')}
+      <div style="flex:1"><div class="fs10 text-light">Re: ${t.role==='Cleaner'?'Cleaning':'Showing'} Request</div><div class="fs13 fw600 text-navy">${t.prop}</div></div>
+      <button class="btn btn-gold" style="padding:6px 12px;font-size:11px" onclick="S.msgOfferMode=true;render()">Make Offer</button>
+    </div>
+    <div style="min-height:200px;max-height:calc(100vh - 380px);overflow-y:auto;margin-bottom:8px" id="msg-scroll">
+      ${bubbles}
+    </div>
+    ${offerComposer}
+    ${inputBar}
+  `;
+}
+
+function offerCardHTML(m, fromMe, tid, mid) {
+  const ac=m.status==='accepted', dc=m.status==='declined', co=m.status==='countered';
+  const border = ac?'#2D7D59':dc?'#C0392B':'#C8924A';
+  const save = m.originalBid && m.originalBid!==m.amount && m.amount<m.originalBid ? `<span class="tag tag-green">Save $${m.originalBid-m.amount}</span>` : '';
+  let actions = '';
+  if (!ac&&!dc&&!co&&!fromMe) {
+    actions = `<div class="flex gap8 mt10">
+      <button class="btn btn-green" style="flex:1;padding:9px 0;font-size:13px" onclick="acceptOffer_msg('${tid}','${mid}')">Accept</button>
+      <button class="btn btn-gold" style="flex:1;padding:9px 0;font-size:13px" onclick="counterOffer_msg('${tid}','${mid}',${m.amount})">Counter</button>
+      <button style="width:36px;background:rgba(192,57,43,0.1);color:#C0392B;border:none;border-radius:10px;font-size:16px;cursor:pointer" onclick="declineOffer_msg('${tid}','${mid}')">✕</button>
+    </div>`;
+  } else if (ac) actions = `<div class="flex gap6 items-center mt8">${icon('check',12,'#2D7D59',2.5)}<span class="fs12 fw700 text-green">Accepted · $${m.amount} in escrow</span></div>`;
+  else if (dc) actions = `<div class="fs12 fw700" style="color:#C0392B;margin-top:8px">Declined</div>`;
+  else if (co) actions = `<div class="fs12 fw700 text-orange mt8">Counter-offer sent</div>`;
+  else if (fromMe) actions = `<div class="fs11 text-light center mt8">Waiting for response...</div>`;
+
+  return `<div class="${fromMe?'flex justify-end':''} mb14">
+    ${!fromMe?avatar('?',28,'#1A5C6B'):''}
+    <div style="margin-left:${!fromMe?8:0}px">
+      <div class="offer-card" style="border:2px solid ${border}">
+        <div class="flex items-center gap6 mb10">${icon('offer',14,'#C8924A',1.5)}<span class="fs11 fw700 text-gold ls08" style="text-transform:uppercase">${fromMe?'Your Offer':'Offer Received'}</span></div>
+        <div class="flex items-center gap10 mb8">
+          <div><div class="fw900 text-navy" style="font-size:30px;line-height:1">$${m.amount}</div><div class="fs10 text-light">offered price</div></div>
+          ${m.originalBid&&m.originalBid!==m.amount?`<div class="fs16 text-light">vs</div><div><div class="fs18 fw700 text-light" style="text-decoration:line-through">$${m.originalBid}</div><div class="fs10 text-light">posted bid</div></div>${save}`:``}
+        </div>
+        ${m.note?`<div class="fs12 text-mid italic mb12 lh16">"${m.note}"</div>`:''}
+        ${actions}
+      </div>
+      <div class="msg-time ${fromMe?'text-right':''}">${m.time}</div>
+    </div>
+  </div>`;
+}
+
+// ── SERVICES ──────────────────────────────────────────────────────
+function servicesHTML() {
+  const items = [
+    ['key','Showings','Licensed agents show your property','#1A5C6B'],
+    ['broom','Cleaning','Move-in, turnover & deep cleans','#2D7D59'],
+    ['wrench','Handyman','Quick fixes & maintenance','#C8924A'],
+    ['tool','Repairs','Plumbing, HVAC, electrical','#C8621A'],
+    ['repeat','Laundry','Linen service for STRs','#5A3A6B'],
+    ['layer','Renovation','Full remodel management','#0F2B3D'],
+    ['building','Prop Management','Full-service remote PM','#3A5C8B'],
+    ['person','Tenant Placement','Screening & lease signing','#1A5C6B'],
+  ].map(([ic,lbl,desc,c])=>`
+    <div class="glass" style="padding:20px 16px;cursor:pointer">
+      ${iconBadge(ic,40,18,`${c}15`,c)}
+      <div class="fw700 fs14 text-navy mt10">${lbl}</div>
+      <div class="fs11 text-mid mt3">${desc}</div>
+    </div>`).join('');
+  return `
+    <div class="fw800 fs22 text-navy mb4">Services</div>
+    <div class="fs13 text-mid mb20">Every provider background-checked &amp; rated</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${items}</div>
+    <div class="glass mt18 r16" style="padding:16px 18px;display:flex;gap:14px;align-items:center">
+      ${iconBadge('shield',42,20,'rgba(200,146,74,0.15)','#C8924A')}
+      <div><div class="fw700 text-navy fs14">ṢOMI Guarantee</div><div class="fs12 text-mid">All payments held in escrow. Released only on completion &amp; approval.</div></div>
+    </div>
+  `;
+}
+
+// ── ACCOUNT ───────────────────────────────────────────────────────
+function accountHTML() {
+  const rc = roleConfig();
+  const isProOrAgent = S.role==='pro'||S.role==='agent';
+  const items = [
+    {ic:'shield',lbl:'Background Check',val:'Verified'},
+    {ic:'card',lbl:isProOrAgent?'Payout Method':'Payment Method',val:isProOrAgent?'Bank ···· 2290':'Visa ···· 4821'},
+    {ic:'bell',lbl:'Job Alerts',val:'On · Push + SMS'},
+    {ic:'pin',lbl:'Service Area',val:'Cincinnati, OH (50 mi)'},
+    ...(S.role==='pro'?[{ic:'taxes',lbl:'Tax / 1099',val:'Set up →'}]:[]),
+  ].map(item=>`<div class="glass mb8 r14" style="padding:13px 16px;display:flex;justify-content:space-between;align-items:center">
+    <div class="flex gap10 items-center">${iconBadge(item.ic,30,14,`${rc.color}12`,rc.color)}<span class="fs13 fw600 text-navy">${item.lbl}</span></div>
+    <span class="fs12 text-mid">${item.val}</span>
+  </div>`).join('');
+  return `
+    <div class="fw800 fs22 text-navy mb20">Account</div>
+    <div class="card p22 mb14">
+      <div class="flex gap14 items-center mb14">
+        ${avatar(S.role==='pro'?'JP':'UN',56,rc.color)}
+        <div><div class="fw800 fs16 text-navy">${S.role==='pro'?'Jordan Pierce':'Your Account'}</div><div class="fs12 text-mid">${rc.label} · Verified</div></div>
+      </div>
+      <div class="flex justify-between" style="padding:10px 0;border-top:1px solid rgba(15,43,61,0.07)">
+        <span class="fs13 text-mid">ṢOMI Plan</span>
+        <span class="fw700" style="color:${rc.color}">${S.role==='landlord'?'$19/mo':'Free'}</span>
+      </div>
+    </div>
+    ${items}
+  `;
+}
+
+// ── PROFILE MODAL ─────────────────────────────────────────────────
+function renderModal() {
+  const el = document.getElementById('modal-layer');
+  if (!S.viewProfile) { el.innerHTML=''; return; }
+  const {person: p, isPM} = S.viewProfile;
+  const ac = isPM ? '#3A5C8B' : (p.color||'#1A5C6B');
+  const services = (p.services||[]).map(([lbl,price])=>`
+    <div class="flex justify-between items-center" style="padding:9px 0;border-bottom:1px solid rgba(15,43,61,0.06)">
+      <span class="fs13 text-mid" style="flex:1">${lbl}</span>
+      <span class="fw700 fs13" style="color:${ac}">${price}</span>
+    </div>`).join('');
+  const testimonials = (p.testimonials||[]).map(r=>`
+    <div class="glass mb8 r14" style="padding:12px 14px">
+      <div class="flex justify-between mb4"><span class="fw600 fs13 text-navy">${r.n}</span><span style="color:#C8924A;font-size:12px">${'★'.repeat(r.s)}</span></div>
+      <div class="fs12 text-mid lh16">"${r.t}"</div>
+    </div>`).join('');
+  const badges = [
+    `<span class="tag tag-green">${icon('shield',10,'#2D7D59',2.5)} Background Check</span>`,
+    `<span class="tag tag-green">${icon('check',10,'#2D7D59',2.5)} Licensed</span>`,
+    `<span class="tag" style="background:#E8F4F8;color:${ac}">${p.badge}</span>`,
+    p.exp ? `<span class="tag">${p.exp} experience</span>` : '',
+    p.units ? `<span class="tag">${p.units} units managed</span>` : '',
+    p.closings ? `<span class="tag">${p.closings} rentals closed</span>` : '',
+  ].filter(Boolean).join('');
+
+  el.innerHTML = `<div class="sheet-overlay" onclick="if(event.target===this){S.viewProfile=null;renderModal()}">
+    <div class="sheet card">
+      <div class="sheet-pull"><div class="sheet-pull-bar"></div></div>
+      <div class="sheet-body">
+        <div class="flex justify-between items-start mb16 mt8">
+          <div class="flex gap14 items-center">${avatar(p.ini,60,ac)}
+            <div><div class="fw800 fs18 text-navy">${p.name}</div>
+            <div class="fs12 text-mid">${p.city}</div>
+            <div>${stars(p.rating)} <span class="fs11 text-light">(${p.rc} reviews)</span></div></div>
+          </div>
+          <button onclick="S.viewProfile=null;renderModal()" style="background:rgba(15,43,61,0.08);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center">${icon('x',14,'#4A6070',2)}</button>
+        </div>
+        <div class="flex gap8 wrap mb16">${badges}</div>
+        <div class="glass r16 mb16" style="padding:14px 16px">
+          <div class="fw700 fs13 text-navy mb6">About</div>
+          <div class="fs13 text-mid lh16">${p.bio}</div>
+        </div>
+        <div class="card mb16" style="padding:14px 16px">
+          <div class="fw700 fs13 text-navy mb10">${isPM?'Management Services & Fees':'Services & Rates'}</div>
+          ${services}
+        </div>
+        <div class="mb20">
+          <div class="fw700 fs13 text-navy mb10">Recent Reviews</div>
+          ${testimonials}
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <div class="flex gap10">
+          <button class="btn btn-ghost" style="flex:1" onclick="S.viewProfile=null;renderModal()">Back</button>
+          <button class="btn" style="flex:2;background:linear-gradient(135deg,${ac},${ac}CC);color:#fff;padding:13px 0;font-size:15px;border-radius:14px" onclick="alert('Request sent to ${p.name}! They will respond within 24 hours.');S.viewProfile=null;renderModal()">${isPM?'Request PM Services':'Book This Agent'}</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── JOB DETAIL SHEET ──────────────────────────────────────────────
+function renderSheet() {
+  const el = document.getElementById('modal-layer');
+  const job = S.agViewJob || S.proViewJob;
+  if (!job) { el.innerHTML=''; S.sheetCounterMode=false; S.sheetCounterAmt=''; S.sheetCounterNote=''; return; }
+  const isProJob = !!S.proViewJob;
+  const payout = job.bid;
+  const notes = job.notes||null;
+  const access = job.access||null;
+  const supplies = isProJob ? (job.supplies||[]) : [];
+  const beds = job.beds||null;
+  const baths = job.baths||null;
+  const sqft = job.sqft||null;
+  const recurring = isProJob ? job.recurring : false;
+  const address = isProJob ? job.prop : job.property;
+  const boosts = !isProJob ? (job.boosts||0) : 0;
+  const origBid = !isProJob ? (job.originalBid||job.bid) : job.bid;
+
+  const suppHTML = supplies.length>0?`<div class="card mb14" style="padding:14px 16px">
+    <div class="flex gap8 items-center mb10">${icon('list',14,'#0F2B3D')}<span class="fw700 fs13 text-navy">Supplies Needed</span></div>
+    ${supplies.map(s=>`<div style="display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(15,43,61,0.05)"><div style="width:4px;height:4px;border-radius:50%;background:#C8924A;flex-shrink:0"></div><span class="fs13 text-mid">${s}</span></div>`).join('')}
+  </div>`:'';
+
+  el.innerHTML = `<div class="sheet-overlay" onclick="if(event.target===this){S.agViewJob=null;S.proViewJob=null;renderSheet()}">
+    <div class="sheet card">
+      <div class="sheet-pull"><div class="sheet-pull-bar"></div></div>
+      <div class="sheet-body">
+        <div class="flex justify-between items-start mb16 mt8">
+          <div style="flex:1"><div class="fw800 fs20 text-navy mb3">${isProJob?job.type:job.type}</div><div class="fs13 text-mid">${address}</div></div>
+          <div class="flex flex-col items-center gap6">${urgencyTag(job.urgency)}<button onclick="S.agViewJob=null;S.proViewJob=null;renderSheet()" style="background:rgba(15,43,61,0.07);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center">${icon('x',14,'#4A6070',2)}</button></div>
+        </div>
+        <div class="glass r18 mb16" style="padding:18px 20px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="fs11 text-light mb2" style="letter-spacing:.8px;text-transform:uppercase">Your Payout</div>
+            <div class="fw900 text-teal" style="font-size:38px;line-height:1">$${payout}</div>
+            ${boosts>0?`<div class="fs11 text-orange mt3">Boosted ${boosts}× — was $${origBid}</div>`:''}
+            ${recurring?'<span class="tag tag-green" style="margin-top:6px;display:inline-flex">Recurring available</span>':''}
+          </div>
+          ${iconBadge(isProJob?job.icon:job.thumb,52,24,'rgba(26,92,107,0.1)','#1A5C6B')}
+        </div>
+        <div class="flex gap8 wrap mb16">
+          <div class="glass r14" style="padding:10px 14px;display:flex;align-items:center;gap:8px">${icon('clock',14,'#C8924A')}<span class="fs12 fw600 text-navy">${job.time}</span></div>
+          ${beds?`<div class="glass r14" style="padding:10px 14px;display:flex;align-items:center;gap:8px">${icon('home',14,'#1A5C6B')}<span class="fs12 fw600 text-navy">${beds}bd / ${baths}ba</span></div>`:''}
+          ${sqft?`<div class="glass r14" style="padding:10px 14px;display:flex;align-items:center;gap:8px">${icon('grid',14,'#1A5C6B')}<span class="fs12 fw600 text-navy">${sqft} sqft</span></div>`:''}
+        </div>
+        ${notes?`<div class="card mb14" style="padding:14px 16px">
+          <div class="flex gap8 items-center mb8">${icon('list',14,'#0F2B3D')}<span class="fw700 fs13 text-navy">Job Notes</span></div>
+          <div class="fs13 text-mid lh16">${notes}</div>
+        </div>`:''}
+        ${access?`<div class="card mb14" style="padding:14px 16px">
+          <div class="flex gap8 items-center mb8">${icon('key',14,'#C8924A')}<span class="fw700 fs13 text-navy">Property Access</span></div>
+          <div class="fw600 fs14 text-teal">${access}</div>
+          <div class="fs11 text-light mt4">Full access code visible after you claim this job.</div>
+        </div>`:''}
+        ${suppHTML}
+        <div class="glass mb22 r14" style="padding:12px 16px;display:flex;gap:10px;align-items:center">
+          ${icon('shield',16,'#C8924A')}
+          <div><div class="fw600 fs12 text-navy">ṢOMI Escrow Protection</div><div class="fs11 text-mid">Payment locked on claim. Released after completion.</div></div>
+        </div>
+      </div>
+      <div class="sheet-footer">
+        ${S.sheetCounterMode ? `
+          <div style="background:rgba(200,146,74,0.06);border:1.5px solid rgba(200,146,74,0.3);border-radius:16px;padding:16px;margin-bottom:12px">
+            <div class="fw700 fs14 text-navy mb4">Send a Counter-Offer</div>
+            <div class="fs12 text-mid mb12">Landlord posted <strong>$${payout}</strong>. Propose your own price and add a note — they'll see it in Messages.</div>
+            <div style="display:flex;align-items:center;background:#fff;border:1.5px solid #C8924A;border-radius:12px;padding:0 14px;margin-bottom:10px">
+              <span class="fw800 fs22 text-teal">$</span>
+              <input type="number" id="sheet-counter-amt" value="${S.sheetCounterAmt||''}" placeholder="${payout}" style="border:none;outline:none;font-size:24px;font-weight:800;width:100%;padding:10px 6px;color:#0F2B3D;font-family:'DM Sans',sans-serif">
+            </div>
+            <input type="text" id="sheet-counter-note" value="${S.sheetCounterNote||''}" placeholder="Add a note — e.g. I can do this for $${Math.round(payout*.85)} and include a full report" style="width:100%;border:1.5px solid rgba(15,43,61,0.15);border-radius:12px;padding:11px 14px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:12px;box-sizing:border-box">
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost" style="flex:1" onclick="S.sheetCounterMode=false;S.sheetCounterAmt='';S.sheetCounterNote='';renderSheet()">Cancel</button>
+              <button class="btn btn-gold" style="flex:2;padding:11px 0" onclick="submitSheetCounter(${payout})">Send Counter-Offer</button>
+            </div>
+          </div>
+        ` : `
+          <div style="display:flex;gap:10px;margin-bottom:10px">
+            <button class="btn" style="flex:1;padding:13px 0;font-size:13px;background:rgba(200,146,74,0.1);color:#C8924A;border:1.5px solid rgba(200,146,74,0.3);border-radius:14px" onclick="S.sheetCounterMode=true;renderSheet()">
+              ${icon('offer',14,'#C8924A',1.5)} Counter Offer
+            </button>
+            <button class="btn btn-navy" style="flex:2;padding:13px 0;font-size:15px;border-radius:14px;box-shadow:0 6px 24px rgba(15,43,61,0.25)" id="claim-btn" onclick="claimJob_btn()">
+              Claim · $${payout}
+            </button>
+          </div>
+        `}
+        <div class="sheet-footer-note">${S.sheetCounterMode ? 'Your counter-offer goes to the landlord via Messages.' : 'Claim locks in your spot at posted price. Counter to negotiate.'}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────
+function go(screen) { S.screen=screen; S.selectedRole=null; render(); }
+function enterApp(role) { S.role=role; S.screen='app'; S.tab='dashboard'; render(); }
+function setTab(tab) { S.tab=tab; render(); }
+
+function attachListeners() {}
+
+function closeOverlay(e) { if (e.target===e.currentTarget) { S.postModal=false; render(); } }
+
+function submitPost() {
+  const addr = document.getElementById('post-addr')?.value;
+  const amount = document.getElementById('post-amount')?.value;
+  if (!addr || !amount) return;
+  S.postedBid = {
+    address: addr,
+    type: document.getElementById('post-type')?.value,
+    date: document.getElementById('post-date')?.value,
+    time: document.getElementById('post-time')?.value,
+    amount,
+  };
+  S.postModal = false;
+  S.llTab = 'bids';
+  render();
+}
+
+function boostBid(id) {
+  S.boosted.add(id);
+  const b = getBids().find(x=>x.id===id);
+  if (b) { b.bid+=25; b.boosts++; }
+  if (S.viewBid && S.viewBid.id===id) S.viewBid = getBids().find(x=>x.id===id);
+  render();
+}
+
+function acceptOffer(bidId, idx) {
+  const b = getBids().find(x=>x.id===bidId);
+  if (!b) return;
+  b.interested = b.interested.map((p,i)=>({...p, offerStatus: i===idx?'accepted':(p.offerStatus==='accepted'?'declined':p.offerStatus)}));
+  if (S.viewBid) S.viewBid = b;
+  render();
+}
+
+function declineOffer(bidId, idx) {
+  const b = getBids().find(x=>x.id===bidId);
+  if (!b) return;
+  b.interested[idx].offerStatus='declined';
+  if (S.viewBid) S.viewBid = b;
+  render();
+}
+
+function openThread(id) {
+  S.msgThread = getMsgList().find(t=>t.id===id);
+  S.msgOfferMode=false; S.msgCounterTarget=null;
+  render();
+  setTimeout(()=>{const sc=document.getElementById('msg-scroll');if(sc)sc.scrollTop=sc.scrollHeight;},50);
+}
+
+function sendMsg(tid) {
+  const inp = document.getElementById('msg-input');
+  const text = inp?.value?.trim();
+  if (!text) return;
+  if (!S.msgList[tid]) S.msgList[tid]=[];
+  S.msgList[tid].push({id:'m'+Date.now(),from:'me',type:'text',text,time:'Just now'});
+  render();
+  setTimeout(()=>{const sc=document.getElementById('msg-scroll');if(sc)sc.scrollTop=sc.scrollHeight;},50);
+}
+
+function sendOffer(tid) {
+  const amt = parseInt(document.getElementById('offer-amt')?.value);
+  const note = document.getElementById('offer-note')?.value;
+  if (!amt) return;
+  if (!S.msgList[tid]) S.msgList[tid]=[];
+  const newMsg = {id:'m'+Date.now(),from:'me',type:'offer',amount:amt,originalBid:S.msgCounterTarget?S.msgCounterTarget.amount:null,note:note||null,time:'Just now',status:'pending'};
+  if (S.msgCounterTarget) {
+    S.msgList[tid] = S.msgList[tid].map(m=>m.id===S.msgCounterTarget.id?{...m,status:'countered'}:m);
+  }
+  S.msgList[tid].push(newMsg);
+  S.msgOfferMode=false; S.msgCounterTarget=null; S.msgOfferAmt=''; S.msgOfferNote='';
+  render();
+}
+
+function acceptOffer_msg(tid, mid) {
+  S.msgList[tid] = S.msgList[tid].map(m=>m.id===mid?{...m,status:'accepted'}:m);
+  const t = getMsgList().find(x=>x.id==tid);
+  if (t) { t.status='confirmed'; t.last='Offer accepted · Escrow locked'; }
+  render();
+}
+
+function declineOffer_msg(tid, mid) {
+  S.msgList[tid] = S.msgList[tid].map(m=>m.id===mid?{...m,status:'declined'}:m);
+  render();
+}
+
+function counterOffer_msg(tid, mid, amount) {
+  S.msgList[tid] = S.msgList[tid].map(m=>m.id===mid?{...m,status:'countered'}:m);
+  S.msgCounterTarget = {id:mid, amount};
+  S.msgOfferMode = true;
+  render();
+}
+
+function startJob(jid) {
+  const j = S.proMyJobs.find(x=>x.id===jid);
+  if (!j) return;
+  S.proActiveJob = j;
+  S.proPhase = 'detail';
+  S.proTab = 'active';
+  S.proChecked = {};
+  render();
+}
+
+function toggleTask(key) {
+  S.proChecked[key] = !S.proChecked[key];
+  render();
+}
+
+function claimJob_btn() {
+  const btn = document.getElementById('claim-btn');
+  if (btn) { btn.textContent='Claimed — Escrow Locked'; btn.style.background='#2D7D59'; }
+  setTimeout(()=>{
+    if (S.agViewJob) {
+      S.agClaimed.push({...S.agViewJob});
+      S.agViewJob = null;
+    } else if (S.proViewJob) {
+      S.proMyJobs.push({...S.proViewJob});
+      S.proViewJob = null;
+    }
+    S.sheetCounterMode = false; S.sheetCounterAmt = ''; S.sheetCounterNote = '';
+    renderSheet();
+    render();
+  }, 700);
+}
+
+function submitSheetCounter(postedPrice) {
+  const amt = parseInt(document.getElementById('sheet-counter-amt')?.value);
+  const note = document.getElementById('sheet-counter-note')?.value?.trim();
+  if (!amt) return;
+
+  const job = S.agViewJob || S.proViewJob;
+  const jobLabel = job ? (job.type + ' — ' + (job.prop || job.property || '').split(',')[0]) : 'Showing Request';
+
+  // Find or create a matching thread in messages
+  const threads = getMsgList();
+  // Use thread 1 (Marcus Webb / 1072 Rachel St) as the demo thread, or create a new one
+  const existingThread = threads[0];
+  const tid = existingThread.id;
+
+  if (!S.msgList[tid]) S.msgList[tid] = [];
+  S.msgList[tid].push({
+    id: 'm' + Date.now(),
+    from: 'me',
+    type: 'offer',
+    amount: amt,
+    originalBid: postedPrice,
+    note: note || null,
+    time: 'Just now',
+    status: 'pending',
+  });
+
+  // Update thread preview
+  existingThread.last = `Counter-offer sent: $${amt}`;
+  existingThread.status = 'negotiating';
+
+  // Close sheet, open messages to show the counter went through
+  const sentAmt = amt;
+  S.sheetCounterMode = false; S.sheetCounterAmt = ''; S.sheetCounterNote = '';
+  S.agViewJob = null; S.proViewJob = null;
+
+  // Show success state then navigate to messages
+  renderSheet();
+
+  // Show a brief confirmation overlay then go to messages
+  const el = document.getElementById('modal-layer');
+  el.innerHTML = `<div style="position:fixed;inset:0;background:rgba(15,43,61,0.5);backdrop-filter:blur(10px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px">
+    <div class="card" style="width:100%;max-width:380px;padding:28px;text-align:center">
+      ${iconBadge('offer',60,28,'rgba(200,146,74,0.12)','#C8924A')}
+      <div class="fw800 fs18 text-navy mt16 mb8">Counter-Offer Sent</div>
+      <div class="fs14 text-mid mb6">Your offer of <strong style="color:#1A5C6B;font-size:18px">$${sentAmt}</strong> has been sent to the landlord.</div>
+      <div class="fs12 text-light mb20">You'll get notified when they respond. Track it in Messages.</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('modal-layer').innerHTML='';render()">Stay Here</button>
+        <button class="btn btn-navy" style="flex:2;padding:12px 0" onclick="document.getElementById('modal-layer').innerHTML='';S.tab='messages';S.msgThread=getMsgList().find(x=>x.id===${tid});render()">View in Messages</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── SIGNUP / ONBOARDING ───────────────────────────────────────────
+function startSignup(role) {
+  S.role = role;
+  S.signup = true;
+  S.signupStep = 0;
+  S.signupData = {};
+  S.bgCheckStatus = null;
+  S.screen = 'signup';
+  render();
+}
+
+function signupHTML() {
+  if (S.role === 'landlord') return signupLandlord();
+  if (S.role === 'agent')    return signupAgent();
+  if (S.role === 'pro')      return signupPro();
+  return '';
+}
+
+// ── SHARED HELPERS ──
+function stepBar(current, total, color='#1A5C6B') {
+  const pct = Math.round((current / total) * 100);
+  return `<div style="margin-bottom:28px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:11px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.8px">Step ${current} of ${total}</span>
+      <span style="font-size:11px;color:#8A9BAA">${pct}% complete</span>
+    </div>
+    <div style="background:rgba(15,43,61,0.08);border-radius:10px;height:6px;overflow:hidden">
+      <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,${color},${color}99);border-radius:10px;transition:width .3s"></div>
+    </div>
+  </div>`;
+}
+
+function signupHeader(title, sub, back) {
+  return `<div style="margin-bottom:24px">
+    ${back ? `<button onclick="${back}" style="background:none;border:none;color:#8A9BAA;font-size:13px;cursor:pointer;padding:0;margin-bottom:14px;display:flex;align-items:center;gap:6px">${icon('chevron',14,'#8A9BAA',2)} Back</button>` : ''}
+    <div style="font-weight:800;font-size:22px;color:#0F2B3D;margin-bottom:4px">${title}</div>
+    <div style="font-size:13px;color:#4A6070">${sub}</div>
+  </div>`;
+}
+
+function field(label, id, type='text', placeholder='', hint='') {
+  return `<div style="margin-bottom:14px">
+    <label class="form-label">${label}</label>
+    <input id="${id}" type="${type}" placeholder="${placeholder}" class="form-input" style="width:100%;box-sizing:border-box">
+    ${hint ? `<div style="font-size:11px;color:#8A9BAA;margin-top:4px">${hint}</div>` : ''}
+  </div>`;
+}
+
+function verifiedBadge(label, done=false) {
+  return `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:${done?'#EAF5F0':'rgba(15,43,61,0.04)'};border:1.5px solid ${done?'rgba(45,125,89,0.3)':'rgba(15,43,61,0.1)'}">
+    ${iconBadge(done?'check':'clock',28,13,done?'rgba(45,125,89,0.2)':'rgba(15,43,61,0.08)',done?'#2D7D59':'#8A9BAA')}
+    <div style="flex:1"><div style="font-weight:600;font-size:13px;color:${done?'#2D7D59':'#0F2B3D'}">${label}</div></div>
+    ${done?`<span class="tag tag-green">Verified</span>`:''}
+  </div>`;
+}
+
+// ── LANDLORD SIGNUP (3 steps) ──────────────────────────────────────
+function signupLandlord() {
+  const step = S.signupStep;
+  const color = '#1A5C6B';
+
+  if (step === 0) return `
+    ${stepBar(1, 3, color)}
+    ${signupHeader('Create your account', 'Takes about 2 minutes to get started.')}
+    <div class="card" style="padding:22px">
+      ${field('Full Name', 'll-name', 'text', 'Jane Smith')}
+      ${field('Email Address', 'll-email', 'email', 'jane@email.com')}
+      ${field('Phone Number', 'll-phone', 'tel', '(555) 000-0000')}
+      ${field('Password', 'll-pass', 'password', 'Min. 8 characters')}
+    </div>
+    <div style="margin:16px 0 8px;font-size:11px;color:#8A9BAA;text-align:center">By continuing you agree to the ṢOMI Terms of Service & Privacy Policy.</div>
+    <button class="btn btn-primary btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;margin-top:4px" onclick="S.signupStep=1;render()">Continue →</button>
+    <div style="text-align:center;margin-top:16px"><span style="font-size:13px;color:#8A9BAA">Already have an account? </span><button onclick="enterApp('landlord')" style="background:none;border:none;color:#1A5C6B;font-weight:700;font-size:13px;cursor:pointer">Sign in</button></div>
+  `;
+
+  if (step === 1) return `
+    ${stepBar(2, 3, color)}
+    ${signupHeader('Your properties', 'Tell us about your portfolio so we can match you with the right pros.', "S.signupStep=0;render()")}
+    <div class="card" style="padding:22px">
+      ${field('How many rental properties do you own?', 'll-count', 'number', '3')}
+      <div style="margin-bottom:14px">
+        <label class="form-label">Rental Types (select all that apply)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+          ${[['STR','Short-Term (Airbnb/VRBO)'],['MTR','Mid-Term (30-90 days)'],['LTR','Long-Term (12+ months)'],['Mixed','Mixed Portfolio']].map(([id,lbl])=>`
+            <button onclick="this.classList.toggle('sel-active');this.style.borderColor=this.classList.contains('sel-active')?'#1A5C6B':'rgba(15,43,61,0.15)';this.style.background=this.classList.contains('sel-active')?'rgba(26,92,107,0.08)':'#fff';this.style.color=this.classList.contains('sel-active')?'#1A5C6B':'#4A6070'"
+              style="padding:10px 8px;border:1.5px solid rgba(15,43,61,0.15);border-radius:12px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#4A6070;text-align:left;font-family:'DM Sans',sans-serif">
+              <div style="font-weight:700;color:inherit">${id}</div>
+              <div style="font-size:10px;color:#8A9BAA;font-weight:400;margin-top:2px">${lbl}</div>
+            </button>`).join('')}
+        </div>
+      </div>
+      ${field('Primary Market (city, state)', 'll-market', 'text', 'Cincinnati, OH')}
+    </div>
+    <button class="btn btn-primary btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;margin-top:16px" onclick="S.signupStep=2;render()">Continue →</button>
+  `;
+
+  if (step === 2) return `
+    ${stepBar(3, 3, color)}
+    ${signupHeader('Choose your plan', 'Simple monthly subscription. Cancel anytime.', "S.signupStep=1;render()")}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      ${[
+        {id:'starter',name:'Starter',price:'$9',sub:'/mo',features:['Up to 3 listings','Browse agents','Post bids','Basic messaging'],color:'#8A9BAA',selected:false},
+        {id:'pro',name:'Pro',price:'$19',sub:'/mo',features:['Unlimited listings','Priority matching','Bid boosting','All service categories'],color:'#1A5C6B',selected:true},
+      ].map(p=>`
+        <div style="padding:18px 14px;border:2px solid ${p.selected?p.color:'rgba(15,43,61,0.12)'};border-radius:16px;background:${p.selected?'rgba(26,92,107,0.04)':'#fff'};cursor:pointer;position:relative" onclick="this.parentElement.querySelectorAll('div').forEach(d=>d.style.borderColor='rgba(15,43,61,0.12)');this.style.borderColor='${p.color}'">
+          ${p.selected?`<div style="position:absolute;top:-1px;right:10px;background:${p.color};color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:0 0 8px 8px;letter-spacing:.5px">POPULAR</div>`:''}
+          <div style="font-weight:800;font-size:16px;color:#0F2B3D">${p.name}</div>
+          <div style="font-weight:900;font-size:24px;color:${p.color};line-height:1.2;margin:4px 0">${p.price}<span style="font-size:13px;font-weight:600;color:#8A9BAA">${p.sub}</span></div>
+          ${p.features.map(f=>`<div style="font-size:11px;color:#4A6070;margin-top:5px;display:flex;gap:6px;align-items:center">${icon('check',10,'#2D7D59',2.5)} ${f}</div>`).join('')}
+        </div>`).join('')}
+    </div>
+    <div class="card" style="padding:20px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:14px">${icon('card',16,'#0F2B3D')} Payment Details</div>
+      ${field('Card Number', 'll-card', 'text', '•••• •••• •••• ••••')}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${field('Expiry', 'll-exp', 'text', 'MM / YY')}
+        ${field('CVV', 'll-cvv', 'text', '•••')}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;padding:10px 12px;background:rgba(45,125,89,0.05);border-radius:10px;margin-top:4px">
+        ${icon('shield',14,'#2D7D59')}
+        <span style="font-size:11px;color:#4A6070">256-bit SSL encryption. Your card info is never stored.</span>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;margin-top:16px" onclick="signupComplete('landlord')">Start Subscription →</button>
+  `;
+}
+
+// ── AGENT SIGNUP (4 steps) ─────────────────────────────────────────
+function signupAgent() {
+  const step = S.signupStep;
+  const color = '#C8924A';
+
+  if (step === 0) return `
+    ${stepBar(1, 4, color)}
+    ${signupHeader('Create your agent profile', 'Free to join. You keep 90% of every job.')}
+    <div class="card" style="padding:22px">
+      ${field('Full Name', 'ag-name', 'text', 'Marcus Webb')}
+      ${field('Email Address', 'ag-email', 'email', 'marcus@email.com')}
+      ${field('Phone Number', 'ag-phone', 'tel', '(555) 000-0000')}
+      ${field('Password', 'ag-pass', 'password', 'Min. 8 characters')}
+      ${field('City & State', 'ag-city', 'text', 'Cincinnati, OH')}
+    </div>
+    <button class="btn btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;margin-top:16px;background:linear-gradient(135deg,#C8924A,#E8B070);color:#fff" onclick="S.signupStep=1;render()">Continue →</button>
+    <div style="text-align:center;margin-top:16px"><span style="font-size:13px;color:#8A9BAA">Already have an account? </span><button onclick="enterApp('agent')" style="background:none;border:none;color:#C8924A;font-weight:700;font-size:13px;cursor:pointer">Sign in</button></div>
+  `;
+
+  if (step === 1) return `
+    ${stepBar(2, 4, color)}
+    ${signupHeader('License verification', 'Your license number is stored securely and never displayed publicly. Landlords only see a "Licensed ✓" badge.', "S.signupStep=0;render()")}
+    <div class="card" style="padding:22px;margin-bottom:14px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:12px">${icon('award',16,'#C8924A')} Real Estate License</div>
+      ${field('State of License', 'ag-lic-state', 'text', 'OH')}
+      ${field('License Number', 'ag-lic-num', 'text', 'OH RE Lic #XXXX-XXXX', 'Stored encrypted. Never shown to landlords.')}
+      <div style="margin-bottom:4px">
+        <label class="form-label">Upload License Document</label>
+        <div onclick="this.innerHTML='<div style=\\'text-align:center\\'>'+icon('check',24,'#2D7D59',2)+\"<div style='font-size:13px;font-weight:600;color:#2D7D59;margin-top:8px'>License Uploaded</div></div>\"" style="border:2px dashed rgba(15,43,61,0.2);border-radius:14px;padding:28px;text-align:center;cursor:pointer;background:rgba(15,43,61,0.02)" id="lic-upload">
+          ${icon('photo',28,'#8A9BAA',1.5)}
+          <div style="font-size:13px;color:#8A9BAA;margin-top:8px">Tap to upload PDF or photo</div>
+          <div style="font-size:11px;color:#8A9BAA;margin-top:3px">JPG, PNG, or PDF · Max 10MB</div>
+        </div>
+      </div>
+    </div>
+    <div class="glass" style="padding:14px 16px;border-radius:14px;display:flex;gap:10px;align-items:center;margin-bottom:16px">
+      ${icon('lock',16,'#1A5C6B')}
+      <div style="font-size:12px;color:#4A6070;line-height:1.5">Your license number is encrypted at rest and used only for internal verification. Landlords see <strong style="color:#2D7D59">Licensed ✓</strong> — never the number.</div>
+    </div>
+    <button class="btn btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#C8924A,#E8B070);color:#fff" onclick="S.signupStep=2;render()">Continue →</button>
+  `;
+
+  if (step === 2) return `
+    ${stepBar(3, 4, color)}
+    ${signupHeader('Background check', 'Required for all agents on ṢOMI. Powered by Checkr. Most results return within 1–3 business days.', "S.signupStep=1;render()")}
+    <div class="card" style="padding:22px;margin-bottom:14px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:14px">${icon('shield',16,'#C8924A')} Identity Verification</div>
+      ${field('Social Security Number (last 4)', 'ag-ssn', 'text', '••••', 'Used only for background check. Stored encrypted, never shared.')}
+      ${field('Date of Birth', 'ag-dob', 'date')}
+      ${field('Home Address', 'ag-addr', 'text', '123 Main St, Cincinnati OH 45214')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+      ${verifiedBadge('National Criminal Database Search', S.bgCheckStatus==='cleared')}
+      ${verifiedBadge('Sex Offender Registry Check', S.bgCheckStatus==='cleared')}
+      ${verifiedBadge('County Criminal Records', S.bgCheckStatus==='cleared')}
+      ${verifiedBadge('Identity Verification', S.bgCheckStatus==='cleared')}
+    </div>
+    <div style="font-size:11px;color:#8A9BAA;text-align:center;margin-bottom:16px">Background check powered by Checkr. One-time fee of $30 charged at submission. Results typically in 1–3 business days.</div>
+    ${S.bgCheckStatus === 'processing' ? `
+      <div style="padding:16px;background:rgba(200,146,74,0.08);border:1.5px solid rgba(200,146,74,0.3);border-radius:14px;text-align:center;margin-bottom:16px">
+        ${iconBadge('clock',40,18,'rgba(200,146,74,0.12)','#C8924A')}
+        <div style="font-weight:700;color:#0F2B3D;margin-top:10px">Processing Your Check</div>
+        <div style="font-size:12px;color:#4A6070;margin-top:4px">You'll receive an email within 1–3 business days. You can continue setting up your profile.</div>
+      </div>
+      <button class="btn btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#C8924A,#E8B070);color:#fff" onclick="S.signupStep=3;render()">Continue to Rates →</button>
+    ` : `
+      <button class="btn btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#C8924A,#E8B070);color:#fff" onclick="S.bgCheckStatus='processing';render()">Submit Background Check · $30</button>
+    `}
+  `;
+
+  if (step === 3) return `
+    ${stepBar(4, 4, color)}
+    ${signupHeader('Set your rates', 'You control your pricing. Landlords see these when browsing agents.', "S.signupStep=2;render()")}
+    <div class="card" style="padding:22px;margin-bottom:14px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:4px">Showing Rates</div>
+      <div style="font-size:12px;color:#8A9BAA;margin-bottom:16px">Set per-showing prices. You can update these anytime.</div>
+      ${[['ag-r1','STR / Short-Term Showing','$45'],['ag-r2','MTR / Mid-Term Showing','$40'],['ag-r3','LTR / Long-Term Showing','$35'],['ag-r4','Open House (per event)','$80']].map(([id,lbl,ph])=>`
+        <div style="margin-bottom:12px">
+          <label class="form-label">${lbl}</label>
+          <div style="display:flex;align-items:center;border:1.5px solid rgba(15,43,61,0.15);border-radius:12px;overflow:hidden;background:#fff">
+            <span style="padding:0 12px;font-size:18px;font-weight:800;color:#1A5C6B">$</span>
+            <input type="number" id="${id}" placeholder="${ph.replace('$','')}" style="border:none;outline:none;font-size:16px;font-weight:700;width:100%;padding:11px 6px;color:#0F2B3D;font-family:'DM Sans',sans-serif">
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="card" style="padding:18px 20px;margin-bottom:16px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:12px">About You (shown to landlords)</div>
+      <div style="margin-bottom:12px">
+        <label class="form-label">Bio (2–3 sentences)</label>
+        <textarea class="form-textarea w100" rows="3" placeholder="e.g. Licensed agent in Cincinnati with 6 years experience in STR and MTR showings. Quick, reliable, and I send same-day showing reports..."></textarea>
+      </div>
+      <div style="margin-bottom:4px">
+        <label class="form-label">Specialties</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          ${['STR','MTR','LTR','Luxury','Multi-unit'].map(s=>`
+            <button onclick="this.style.background=this.style.background?'':'rgba(200,146,74,0.1)';this.style.borderColor=this.style.background?'#C8924A':'rgba(15,43,61,0.15)';this.style.color=this.style.background?'#C8924A':'#4A6070'"
+              style="padding:6px 14px;border:1.5px solid rgba(15,43,61,0.15);border-radius:20px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#4A6070;font-family:'DM Sans',sans-serif">${s}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-block" style="padding:14px 0;font-size:16px;border-radius:14px;background:linear-gradient(135deg,#C8924A,#E8B070);color:#fff;box-shadow:0 6px 20px rgba(200,146,74,0.3)" onclick="signupComplete('agent')">Complete Profile →</button>
+  `;
+}
+
+// ── SERVICE PRO SIGNUP (4 steps) ───────────────────────────────────
+function signupPro() {
+  const step = S.signupStep;
+  const color = '#2D7D59';
+
+  if (step === 0) return `
+    ${stepBar(1, 4, color)}
+    ${signupHeader('Create your pro profile', 'Free to join. Keep 90% of every job you complete.')}
+    <div class="card" style="padding:22px">
+      ${field('Full Name', 'pro-name', 'text', 'Jordan Pierce')}
+      ${field('Email Address', 'pro-email', 'email', 'jordan@email.com')}
+      ${field('Phone Number', 'pro-phone', 'tel', '(555) 000-0000')}
+      ${field('Password', 'pro-pass', 'password', 'Min. 8 characters')}
+      ${field('City & State', 'pro-city', 'text', 'Cincinnati, OH')}
+      <div style="margin-bottom:4px">
+        <label class="form-label">Do you operate as a business?</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+          ${[['yes','Yes — I have an LLC / business','#2D7D59'],['no','No — I work as an individual','#4A6070']].map(([id,lbl,c])=>`
+            <button id="biz-${id}" onclick="document.getElementById('biz-yes').style.borderColor='rgba(15,43,61,0.12)';document.getElementById('biz-no').style.borderColor='rgba(15,43,61,0.12)';this.style.borderColor='${c}'"
+              style="padding:10px 10px;border:1.5px solid rgba(15,43,61,0.12);border-radius:12px;background:#fff;cursor:pointer;font-size:11px;font-weight:600;color:#4A6070;font-family:'DM Sans',sans-serif;text-align:left;line-height:1.4">${lbl}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-green btn-block" style="padding:14px 0;font-size:15px;border-radius:14px;margin-top:16px" onclick="S.signupStep=1;render()">Continue →</button>
+    <div style="text-align:center;margin-top:16px"><span style="font-size:13px;color:#8A9BAA">Already have an account? </span><button onclick="enterApp('pro')" style="background:none;border:none;color:#2D7D59;font-weight:700;font-size:13px;cursor:pointer">Sign in</button></div>
+  `;
+
+  if (step === 1) return `
+    ${stepBar(2, 4, color)}
+    ${signupHeader('Choose your tier', 'Higher tiers unlock better jobs and higher-value properties.', "S.signupStep=0;render()")}
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      ${[
+        {id:'basic',name:'Basic Access',badge:'Basic',color:'#8A9BAA',bg:'rgba(138,155,170,0.08)',reqs:['Government ID verification','SSN (last 4) for tax / 1099','Platform agreement','No insurance required'],access:'Lower-bid jobs only. No luxury or high-value properties.'},
+        {id:'verified',name:'Verified Pro',badge:'Verified',color:'#1A5C6B',bg:'rgba(26,92,107,0.05)',reqs:['Everything in Basic','Third-party background check (Checkr)','Business license upload (if applicable)','Phone verification'],access:'All standard jobs across every service category.'},
+        {id:'elite',name:'ṢOMI Elite',badge:'Elite',color:'#C8924A',bg:'rgba(200,146,74,0.05)',reqs:['Everything in Verified','Proof of business insurance ($1M+ general liability)','2 verified landlord references','Maintain 4.7+ rating'],access:'Premium & high-value properties. Large commercial jobs. Property management roles.'},
+      ].map((t,i)=>`
+        <button id="tier-${t.id}" onclick="S.signupData.tier='${t.id}';document.querySelectorAll('[id^=tier-]').forEach(b=>{b.style.borderColor='rgba(15,43,61,0.12)';b.style.background='rgba(255,255,255,0.84)'});this.style.borderColor='${t.color}';this.style.background='${t.bg}'"
+          style="width:100%;text-align:left;padding:16px 18px;border:1.5px solid ${i===1?t.color:'rgba(15,43,61,0.12)'};border-radius:16px;background:${i===1?t.bg:'rgba(255,255,255,0.84)'};cursor:pointer;font-family:'DM Sans',sans-serif;position:relative">
+          ${i===1?`<div style="position:absolute;top:-1px;right:12px;background:#1A5C6B;color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:0 0 8px 8px;letter-spacing:.5px">RECOMMENDED</div>`:''}
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span style="font-weight:800;font-size:15px;color:#0F2B3D">${t.name}</span>
+            <span class="tag" style="background:${t.bg};color:${t.color};border:1px solid ${t.color}44">${t.badge}</span>
+          </div>
+          ${t.reqs.map(r=>`<div style="font-size:12px;color:#4A6070;margin-bottom:4px;display:flex;gap:6px;align-items:flex-start">${icon('check',11,'#2D7D59',2.5)}<span>${r}</span></div>`).join('')}
+          <div style="font-size:11px;color:${t.color};font-weight:600;margin-top:8px;padding-top:8px;border-top:1px solid rgba(15,43,61,0.06)">${t.access}</div>
+        </button>`).join('')}
+    </div>
+    <button class="btn btn-green btn-block" style="padding:14px 0;font-size:15px;border-radius:14px" onclick="S.signupStep=2;render()">Continue with Selected Tier →</button>
+  `;
+
+  if (step === 2) return `
+    ${stepBar(3, 4, color)}
+    ${signupHeader('Identity & background check', 'Required for all service pros. Keeps landlords — and you — protected.', "S.signupStep=1;render()")}
+    <div class="card" style="padding:22px;margin-bottom:14px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:14px">${icon('person',16,'#2D7D59')} Identity</div>
+      ${field('Legal Full Name', 'pro-legal', 'text', 'As it appears on your government ID')}
+      ${field('Date of Birth', 'pro-dob', 'date')}
+      ${field('Last 4 of SSN', 'pro-ssn', 'text', '••••', 'Used for identity verification and 1099 tax filing only.')}
+      <div style="margin-bottom:4px">
+        <label class="form-label">Upload Government ID</label>
+        <div onclick="this.innerHTML='<div style=\\'text-align:center\\'>'+icon('check',24,'#2D7D59',2)+\"<div style='font-size:13px;font-weight:600;color:#2D7D59;margin-top:8px'>ID Uploaded</div></div>\"" style="border:2px dashed rgba(15,43,61,0.2);border-radius:14px;padding:24px;text-align:center;cursor:pointer;background:rgba(15,43,61,0.02)">
+          ${icon('person',28,'#8A9BAA',1.5)}
+          <div style="font-size:13px;color:#8A9BAA;margin-top:8px">Driver's license, state ID, or passport</div>
+        </div>
+      </div>
+    </div>
+    ${S.signupData.tier === 'elite' ? `
+    <div class="card" style="padding:22px;margin-bottom:14px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:12px">${icon('shield',16,'#C8924A')} Business Insurance (Elite Required)</div>
+      <div style="font-size:12px;color:#4A6070;margin-bottom:14px">Upload your Certificate of Insurance. Minimum $1M general liability. If you don't have this yet, you can start as a Verified Pro and upgrade later.</div>
+      <div onclick="this.innerHTML='<div style=\\'text-align:center\\'>'+icon('check',24,'#2D7D59',2)+\"<div style='font-size:13px;font-weight:600;color:#2D7D59;margin-top:8px'>COI Uploaded</div></div>\"" style="border:2px dashed rgba(200,146,74,0.3);border-radius:14px;padding:24px;text-align:center;cursor:pointer;background:rgba(200,146,74,0.03)">
+        ${icon('taxes',28,'#C8924A',1.5)}
+        <div style="font-size:13px;color:#8A9BAA;margin-top:8px">Certificate of Insurance (PDF)</div>
+      </div>
+    </div>` : ''}
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#0F2B3D;margin-bottom:4px">Background check includes:</div>
+      ${verifiedBadge('National Criminal Database', S.bgCheckStatus==='cleared')}
+      ${verifiedBadge('Sex Offender Registry', S.bgCheckStatus==='cleared')}
+      ${verifiedBadge('County-Level Criminal Records', S.bgCheckStatus==='cleared')}
+      ${verifiedBadge('Identity Verification', S.bgCheckStatus==='cleared')}
+    </div>
+    <div style="font-size:11px;color:#8A9BAA;text-align:center;margin-bottom:16px">Background check powered by Checkr. One-time $30 fee. Results in 1–3 business days.</div>
+    ${S.bgCheckStatus==='processing' ? `
+      <div style="padding:16px;background:rgba(45,125,89,0.06);border:1.5px solid rgba(45,125,89,0.3);border-radius:14px;text-align:center;margin-bottom:16px">
+        ${iconBadge('clock',40,18,'rgba(45,125,89,0.12)','#2D7D59')}
+        <div style="font-weight:700;color:#0F2B3D;margin-top:10px">Check Submitted</div>
+        <div style="font-size:12px;color:#4A6070;margin-top:4px">You'll hear back in 1–3 business days. Continue setting up your services below.</div>
+      </div>
+      <button class="btn btn-green btn-block" style="padding:14px 0;font-size:15px;border-radius:14px" onclick="S.signupStep=3;render()">Continue to Services →</button>
+    ` : `
+      <button class="btn btn-green btn-block" style="padding:14px 0;font-size:15px;border-radius:14px" onclick="S.bgCheckStatus='processing';render()">Submit Background Check · $30</button>
+    `}
+  `;
+
+  if (step === 3) return `
+    ${stepBar(4, 4, color)}
+    ${signupHeader('Your services & rates', 'Select what you offer and set your pricing. You can edit anytime.', "S.signupStep=2;render()")}
+    <div class="card" style="padding:22px;margin-bottom:14px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:14px">Services I Offer</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+        ${[['broom','STR Turnover Cleaning','#2D7D59'],['broom','Deep / Move-out Clean','#2D7D59'],['wrench','Handyman','#C8924A'],['tool','Plumbing / HVAC','#C8621A'],['repeat','Laundry & Linen','#5A3A6B'],['layer','Renovation','#0F2B3D']].map(([ic,lbl,c])=>`
+          <button onclick="this.style.borderColor=this.style.borderColor&&this.style.borderColor!=='rgba(15,43,61,0.12)'?'rgba(15,43,61,0.12)':'${c}';this.style.background=this.style.background&&this.style.background!=='rgba(255,255,255,0.84)'?'rgba(255,255,255,0.84)':'${c}11'"
+            style="padding:12px 10px;border:1.5px solid rgba(15,43,61,0.12);border-radius:14px;background:rgba(255,255,255,0.84);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left">
+            ${iconBadge(ic,28,13,`${c}18`,c)}
+            <div style="font-size:12px;font-weight:600;color:#0F2B3D;margin-top:8px">${lbl}</div>
+          </button>`).join('')}
+      </div>
+      <div style="font-weight:700;font-size:13px;color:#0F2B3D;margin-bottom:12px">Your Rates</div>
+      ${[['pro-r1','Turnover Clean (per job)','120'],['pro-r2','Deep Clean (per sq ft)','0.10'],['pro-r3','Handyman (per hour)','45'],['pro-r4','Laundry / Linen (per set)','35']].map(([id,lbl,ph])=>`
+        <div style="margin-bottom:10px">
+          <label class="form-label">${lbl}</label>
+          <div style="display:flex;align-items:center;border:1.5px solid rgba(15,43,61,0.15);border-radius:12px;overflow:hidden;background:#fff">
+            <span style="padding:0 12px;font-size:18px;font-weight:800;color:#2D7D59">$</span>
+            <input type="number" id="${id}" placeholder="${ph}" style="border:none;outline:none;font-size:15px;font-weight:700;width:100%;padding:10px 6px;color:#0F2B3D;font-family:'DM Sans',sans-serif">
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="card" style="padding:20px;margin-bottom:16px">
+      <div style="font-weight:700;font-size:14px;color:#0F2B3D;margin-bottom:12px">Your Service Area</div>
+      ${field('Primary City / Radius', 'pro-area', 'text', 'Cincinnati, OH')}
+      <div style="margin-bottom:4px">
+        <label class="form-label">How far will you travel?</label>
+        <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+          ${['10 mi','25 mi','35 mi','50 mi','No limit'].map(r=>`
+            <button onclick="this.parentElement.querySelectorAll('button').forEach(b=>{b.style.background='#fff';b.style.borderColor='rgba(15,43,61,0.15)';b.style.color='#4A6070'});this.style.background='rgba(45,125,89,0.08)';this.style.borderColor='#2D7D59';this.style.color='#2D7D59'"
+              style="padding:6px 14px;border:1.5px solid rgba(15,43,61,0.15);border-radius:20px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#4A6070;font-family:'DM Sans',sans-serif">${r}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-green btn-block" style="padding:14px 0;font-size:16px;border-radius:14px;box-shadow:0 6px 20px rgba(45,125,89,0.3)" onclick="signupComplete('pro')">Complete Profile →</button>
+  `;
+}
+
+// ── SIGNUP COMPLETE ────────────────────────────────────────────────
+function signupComplete(role) {
+  const rc = {landlord:{color:'#1A5C6B',label:'Landlord'},agent:{color:'#C8924A',label:'Agent'},pro:{color:'#2D7D59',label:'Service Pro'}};
+  const c = rc[role]||rc.landlord;
+  const msgs = {
+    landlord:{title:'Welcome to ṢOMI!',body:"Your subscription is active. You're ready to post your first showing request.",cta:'Go to Dashboard'},
+    agent:{title:'Profile Created!',body:'Your background check is processing — usually 1–3 business days. You can browse the platform while you wait.',cta:'Explore the App'},
+    pro:{title:'You\'re in!',body:'Background check submitted. Browse available jobs while we process your verification.',cta:'Browse Jobs'},
+  };
+  const m = msgs[role]||msgs.landlord;
+  document.getElementById('main').innerHTML = `<div class="page-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center">
+    <div style="width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,${c.color},${c.color}99);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 24px ${c.color}33">
+      ${icon('check',40,'#fff',2.5)}
+    </div>
+    <div class="serif" style="font-size:32px;font-weight:700;color:#0F2B3D;margin-bottom:8px">${m.title}</div>
+    <div style="font-size:14px;color:#4A6070;line-height:1.6;max-width:300px;margin:0 auto 32px">${m.body}</div>
+    ${role==='agent'||role==='pro'?`<div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;margin-bottom:24px">
+      ${verifiedBadge('Background Check',false)}
+      ${verifiedBadge('License Verified', role==='agent')}
+      ${verifiedBadge('Profile Active',true)}
+    </div>`:''}
+    <button class="btn btn-block" style="max-width:340px;padding:15px 0;font-size:15px;border-radius:16px;background:linear-gradient(135deg,${c.color},${c.color}CC);color:#fff;box-shadow:0 6px 20px ${c.color}33" onclick="enterApp('${role}')">${m.cta} →</button>
+  </div>`;
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
